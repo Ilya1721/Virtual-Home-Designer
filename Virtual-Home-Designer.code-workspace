@@ -1,8 +1,10 @@
 {
 	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {}
-}
+	  {
+		"path": "frontend-microservice"
+	  },
+	  {
+		"path": "backend-microservice"
+	  }
+	]
+  }
