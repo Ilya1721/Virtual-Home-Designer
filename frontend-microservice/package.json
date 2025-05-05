@@ -21,7 +21,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "sass": "sass --watch src/views/styles/index.scss:src/views/styles/index.css"
   },
   "eslintConfig": {
     "extends": [
@@ -45,6 +46,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@eslint/js": "^9.16.0",
     "eslint": "^8.57.1",
+    "sass": "^1.86.2",
     "typescript": "^4.9.5",
     "typescript-eslint": "^8.16.0"
   }
