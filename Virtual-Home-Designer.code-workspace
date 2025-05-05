@@ -1,10 +1,13 @@
 {
 	"folders": [
 	  {
-		"path": "frontend-microservice"
+		"path": "client-app"
 	  },
 	  {
-		"path": "backend-microservice"
+		"path": "authentication-service"
+	  },
+	  {
+		"path": "user-management-service"
 	  }
 	]
   }
