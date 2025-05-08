@@ -8,6 +8,9 @@
 	  },
 	  {
 		"path": "user-management-service"
+	  },
+	  {
+		"path": "shared-types"
 	  }
 	]
   }
