@@ -6,15 +6,7 @@ import {
 } from "shared-types";
 import { UserService } from "../business_model/UserService";
 import { DatabaseMock } from "./mocks/DatabaseMock";
-import {
-  CAN_NOT_CHANGE_USER_EMAIL,
-  PROBLEM_WITH_DATABASE,
-  USER_EMAIL_NOT_VALID,
-  USER_ID_NOT_UNIQUE,
-  USER_PASSWORD_NOT_VALID,
-  USER_WITH_SUCH_EMAIL_ALREADY_EXISTS,
-  USER_WITH_SUCH_ID_NOT_FOUND,
-} from "../business_model/constants";
+import { BusinessError } from "../business_model/error";
 
 const database = new DatabaseMock();
 const userService = new UserService(database);
@@ -53,7 +45,7 @@ describe("getAllUsers", () => {
   test("Should throw the correct error when database throws error", async () => {
     dbGetAllUsersMock.mockRejectedValueOnce(new Error("Some database error"));
     await expect(userService.getAllUsers()).rejects.toThrow(
-      PROBLEM_WITH_DATABASE
+      BusinessError.PROBLEM_WITH_DATABASE
     );
   });
 });
@@ -68,7 +60,7 @@ describe("getUserById", () => {
   test("Should throw the correct error when database throws error", async () => {
     dbGetUserByIdMock.mockRejectedValueOnce(new Error("Some database error"));
     await expect(userService.getUserById("1")).rejects.toThrow(
-      PROBLEM_WITH_DATABASE
+      BusinessError.PROBLEM_WITH_DATABASE
     );
   });
 
@@ -99,7 +91,7 @@ describe("createUser", () => {
         ...defaultMockedUser,
         password: mockedPassword,
       })
-    ).rejects.toThrow(USER_WITH_SUCH_EMAIL_ALREADY_EXISTS);
+    ).rejects.toThrow(BusinessError.USER_WITH_SUCH_EMAIL_ALREADY_EXISTS);
   });
 
   test("Should throw the correct error if user with such id already exists", async () => {
@@ -114,7 +106,7 @@ describe("createUser", () => {
         ...defaultMockedUser,
         password: mockedPassword,
       })
-    ).rejects.toThrow(USER_ID_NOT_UNIQUE);
+    ).rejects.toThrow(BusinessError.USER_ID_NOT_UNIQUE);
   });
 
   test("Should throw the correct if database throws error", async () => {
@@ -124,7 +116,7 @@ describe("createUser", () => {
         ...defaultMockedUser,
         password: mockedPassword,
       })
-    ).rejects.toThrow(PROBLEM_WITH_DATABASE);
+    ).rejects.toThrow(BusinessError.PROBLEM_WITH_DATABASE);
   });
 
   test("Should throw the correct error if email is not valid", async () => {
@@ -134,7 +126,7 @@ describe("createUser", () => {
         email: "invalidEmail",
         password: mockedPassword,
       })
-    ).rejects.toThrow(USER_EMAIL_NOT_VALID);
+    ).rejects.toThrow(BusinessError.USER_EMAIL_NOT_VALID);
   });
 
   test("Should throw the correct error if password is not valid", async () => {
@@ -143,7 +135,7 @@ describe("createUser", () => {
         ...defaultMockedUser,
         password: "",
       })
-    ).rejects.toThrow(USER_PASSWORD_NOT_VALID);
+    ).rejects.toThrow(BusinessError.USER_PASSWORD_NOT_VALID);
   });
 });
 
@@ -175,7 +167,7 @@ describe("editUser", () => {
         ...defaultMockedUser,
         email: "NewEmail@gmail.com",
       })
-    ).rejects.toThrow(CAN_NOT_CHANGE_USER_EMAIL);
+    ).rejects.toThrow(BusinessError.CAN_NOT_CHANGE_USER_EMAIL);
   });
 
   test("Should throw correct error if user with such id has not been found", async () => {
@@ -184,7 +176,7 @@ describe("editUser", () => {
       userService.editUser({
         ...defaultMockedUser
       })
-    ).rejects.toThrow(USER_WITH_SUCH_ID_NOT_FOUND);
+    ).rejects.toThrow(BusinessError.USER_WITH_SUCH_ID_NOT_FOUND);
   });
 
   test("Should throw the correct if database throws error", async () => {
@@ -193,6 +185,35 @@ describe("editUser", () => {
       userService.editUser({
         ...defaultMockedUser,
       })
-    ).rejects.toThrow(PROBLEM_WITH_DATABASE);
+    ).rejects.toThrow(BusinessError.PROBLEM_WITH_DATABASE);
+  });
+});
+
+describe("deleteUser", () => {
+  test("Should delete the user", async () => {
+    dbGetUserByIdMock.mockResolvedValueOnce(defaultMockedUser);
+    dbDeleteUserMock.mockResolvedValueOnce(undefined);
+    await userService.deleteUser({
+      ...defaultMockedUser,
+    });
+    expect(dbDeleteUserMock).toHaveBeenCalled();
+  });
+
+  test("Should throw correct error if user with such id has not been found", async () => {
+    dbGetUserByIdMock.mockResolvedValueOnce(null);
+    await expect(
+      userService.deleteUser({
+        ...defaultMockedUser
+      })
+    ).rejects.toThrow(BusinessError.USER_WITH_SUCH_ID_NOT_FOUND);
+  });
+
+  test("Should throw the correct if database throws error", async () => {
+    dbGetUserByIdMock.mockRejectedValueOnce(new Error("Some database error"));
+    await expect(
+      userService.deleteUser({
+        ...defaultMockedUser,
+      })
+    ).rejects.toThrow(BusinessError.PROBLEM_WITH_DATABASE);
   });
 });

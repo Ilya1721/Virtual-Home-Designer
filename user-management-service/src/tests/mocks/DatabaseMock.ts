@@ -2,6 +2,10 @@ import { ReadUserDTO, CreateUserDTO, EditUserDTO, DeleteUserDTO } from 'shared-t
 import { AbstractDatabase } from '../../database/abstract/AbstractDatabase';
 
 export class DatabaseMock implements AbstractDatabase {
+  async connect(): Promise<void> {}
+  
+  async disconnect(): Promise<void> {}
+
   async getUserById(id: string): Promise<ReadUserDTO | null> {
     return null;
   }
@@ -18,7 +22,5 @@ export class DatabaseMock implements AbstractDatabase {
     return null;
   }
 
-  async deleteUser(user: DeleteUserDTO): Promise<boolean> {
-    return true;
-  }
+  async deleteUser(user: DeleteUserDTO): Promise<void> {}
 }

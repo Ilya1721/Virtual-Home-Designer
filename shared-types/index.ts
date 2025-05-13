@@ -1,1 +1,2 @@
-export * from './src/User';
+export * from './src/user';
+export * from './src/error';
