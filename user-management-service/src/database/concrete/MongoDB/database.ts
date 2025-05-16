@@ -1,5 +1,7 @@
+import { CreateUserDTO, DeleteUserDTO, EditUserDTO, ReadUserDTO } from "shared-types";
 import { AbstractDatabase } from "../../abstract/AbstractDatabase";
 import mongoose from "mongoose";
+import { UserModel } from "./models/user";
 
 export class MongoDBDatabase implements AbstractDatabase {
   constructor(private uri: string) {}
@@ -12,20 +14,28 @@ export class MongoDBDatabase implements AbstractDatabase {
     await mongoose.disconnect();
   }
 
-  public async getAllUsers(): Promise<any[]> {
-    return [];
+  public async getAllUsers(): Promise<ReadUserDTO[]> {
+    return await UserModel.find().exec();
   }
 
-  public async getUserById(id: string): Promise<any | null> {
-    return null;
+  public async getUserById(id: string): Promise<ReadUserDTO | null> {
+    return await UserModel.findById(id).exec();
   }
 
-  public async createUser(user: any): Promise<any> {
-    return null;
+  public async createUser(user: CreateUserDTO): Promise<ReadUserDTO> {
+    const newUser = new UserModel(user);
+    await newUser.save();
+    return newUser;
   }
 
-  public async editUser(user: any): Promise<any | null> {
-    return null;
+  public async editUser(user: EditUserDTO): Promise<ReadUserDTO | null> {
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      user.id,
+      user,
+    );
+    return updatedUser;
   }
-  public async deleteUser(user: any): Promise<void> {}
+  public async deleteUser(user: DeleteUserDTO): Promise<void> {
+    await UserModel.findByIdAndDelete(user.id);
+  }
 }

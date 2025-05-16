@@ -1,13 +1,12 @@
-export type ReadUserDTO = {
+export type User = {
   id: string;
   email: string;
-  nickname: string;
-}
-
-export type CreateUserDTO = ReadUserDTO & {
   password: string;
+  nickname: string;
+  createdAt: Date;
 }
 
-export type EditUserDTO = Pick<CreateUserDTO, "id"> & Partial<Omit<CreateUserDTO, "id">> & {}
-
-export type DeleteUserDTO = Pick<ReadUserDTO, "id"> & {}
+export type ReadUserDTO = Omit<User, "password"> & {}
+export type CreateUserDTO = Omit<User, "id" | "createdAt"> & {}
+export type EditUserDTO = Omit<User, "createdAt"> & {}
+export type DeleteUserDTO = Pick<User, "id"> & {}
