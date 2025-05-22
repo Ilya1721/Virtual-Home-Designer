@@ -41,12 +41,19 @@ export class UserRouter implements AbstractRouter {
     });
   }
 
+  private setAuthenticateUserRoute() {
+    this.router.post("/signin", async (req, res) => {
+      await this.userController.authenticateUser(...getReqResPair(req, res));
+    });
+  }
+
   private setRoutes(): void {
     this.setGetAllUsersRoute();
     this.setGetUserByIdRoute();
     this.setCreateUserRoute();
     this.setEditUserRoute();
     this.setDeleteUserRoute();
+    this.setAuthenticateUserRoute();
   }
 
   public connectRouter(connect: (router: Router) => void): void {

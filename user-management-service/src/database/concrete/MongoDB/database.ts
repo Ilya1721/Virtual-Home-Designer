@@ -1,5 +1,5 @@
-import { CreateUserDTO, DeleteUserDTO, EditUserDTO, ReadUserDTO } from "shared-types";
-import { AbstractDatabase } from "../../abstract/AbstractDatabase";
+import { CreateUserDTO, DeleteUserDTO, EditUserDTO, ReadUserDTO, FullUserDTO } from "shared-types";
+import { AbstractDatabase } from "../../abstract/database";
 import mongoose from "mongoose";
 import { UserModel } from "./models/user";
 
@@ -22,6 +22,10 @@ export class MongoDBDatabase implements AbstractDatabase {
     return await UserModel.findById(id).exec();
   }
 
+  public async getUserByEmail(email: string): Promise<FullUserDTO | null> {
+    return await UserModel.findOne({ email }).exec();
+  }
+
   public async createUser(user: CreateUserDTO): Promise<ReadUserDTO> {
     const newUser = new UserModel(user);
     await newUser.save();
@@ -35,6 +39,7 @@ export class MongoDBDatabase implements AbstractDatabase {
     );
     return updatedUser;
   }
+
   public async deleteUser(user: DeleteUserDTO): Promise<void> {
     await UserModel.findByIdAndDelete(user.id);
   }

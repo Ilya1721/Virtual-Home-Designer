@@ -1,26 +1,30 @@
-import { ReadUserDTO, CreateUserDTO, EditUserDTO, DeleteUserDTO } from 'shared-types';
-import { AbstractDatabase } from '../../database/abstract/AbstractDatabase';
+import { ReadUserDTO, CreateUserDTO, EditUserDTO, DeleteUserDTO, FullUserDTO } from 'shared-types';
+import { AbstractDatabase } from '../../database/abstract/database';
 
 export class DatabaseMock implements AbstractDatabase {
-  async connect(): Promise<void> {}
+  public async connect(): Promise<void> {}
   
-  async disconnect(): Promise<void> {}
+  public async disconnect(): Promise<void> {}
 
-  async getUserById(id: string): Promise<ReadUserDTO | null> {
+  public async getUserById(id: string): Promise<ReadUserDTO | null> {
     return null;
   }
 
-  async getAllUsers(): Promise<ReadUserDTO[]> {
+  public async getAllUsers(): Promise<ReadUserDTO[]> {
     return [];
   }
 
-  async createUser(user: CreateUserDTO): Promise<ReadUserDTO> {
+  public async createUser(user: CreateUserDTO): Promise<ReadUserDTO> {
     return {} as ReadUserDTO;
   }
 
-  async editUser(user: EditUserDTO): Promise<ReadUserDTO | null> {
+  public async editUser(user: EditUserDTO): Promise<ReadUserDTO | null> {
     return null;
   }
 
-  async deleteUser(user: DeleteUserDTO): Promise<void> {}
+  public async deleteUser(user: DeleteUserDTO): Promise<void> {}
+
+  public async getUserByEmail(email: string): Promise<FullUserDTO | null> {
+    return null;
+  }
 }

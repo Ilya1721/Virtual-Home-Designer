@@ -2,19 +2,26 @@ import {
   CreateUserDTO,
   DeleteUserDTO,
   EditUserDTO,
+  FullUserDTO,
   ReadUserDTO,
 } from "shared-types";
 import { UserService } from "../business_model/UserService";
 import { DatabaseMock } from "./mocks/DatabaseMock";
-import { BusinessError } from "../business_model/error";
+import { BusinessError } from "../business_model/concrete/error";
+import { SafePasswordHandlerMock } from "./mocks/SafePasswordHandlerMock";
 
 const database = new DatabaseMock();
-const userService = new UserService(database);
+const safePasswordHandler = new SafePasswordHandlerMock();
+const userService = new UserService(database, safePasswordHandler);
 
 const dbGetAllUsersMock = jest.spyOn(database, "getAllUsers");
 dbGetAllUsersMock.mockImplementation(() => database.getAllUsers());
 const dbGetUserByIdMock = jest.spyOn(database, "getUserById");
 dbGetUserByIdMock.mockImplementation((id: string) => database.getUserById(id));
+const dbGetUserByEmailMock = jest.spyOn(database, "getUserByEmail");
+dbGetUserByEmailMock.mockImplementation((email: string) =>
+  database.getUserByEmail(email)
+);
 const dbCreateUserMock = jest.spyOn(database, "createUser");
 dbCreateUserMock.mockImplementation((user: CreateUserDTO) =>
   database.createUser(user)
@@ -27,11 +34,25 @@ const dbDeleteUserMock = jest.spyOn(database, "deleteUser");
 dbDeleteUserMock.mockImplementation((user: DeleteUserDTO) =>
   database.deleteUser(user)
 );
+const isPasswordEqualMock = jest.spyOn(
+  safePasswordHandler,
+  "isEqual"
+);
+const getSafePasswordMock = jest.spyOn(
+  safePasswordHandler,
+  "getSafeString"
+);
 
 const defaultMockedUser: ReadUserDTO = {
   id: "1",
   email: "JohnDoe@gmail.com",
   nickname: "JohnDoe",
+  createdAt: new Date(),
+};
+
+const fullMockedUser: FullUserDTO = {
+  ...defaultMockedUser,
+  password: "password123",
 };
 
 describe("getAllUsers", () => {
@@ -82,6 +103,7 @@ describe("createUser", () => {
       password: "password123",
     });
     expect(user).toEqual(defaultMockedUser);
+    expect(getSafePasswordMock).toHaveBeenCalled();
   });
 
   test("Should throw the correct error if user with such email already exists", async () => {
@@ -94,22 +116,7 @@ describe("createUser", () => {
     ).rejects.toThrow(BusinessError.USER_WITH_SUCH_EMAIL_ALREADY_EXISTS);
   });
 
-  test("Should throw the correct error if user with such id already exists", async () => {
-    dbGetAllUsersMock.mockResolvedValueOnce([
-      {
-        ...defaultMockedUser,
-        email: "anotherEmail@gmail.com",
-      },
-    ]);
-    await expect(
-      userService.createUser({
-        ...defaultMockedUser,
-        password: mockedPassword,
-      })
-    ).rejects.toThrow(BusinessError.USER_ID_NOT_UNIQUE);
-  });
-
-  test("Should throw the correct if database throws error", async () => {
+  test("Should throw the correct error if database throws error", async () => {
     dbCreateUserMock.mockRejectedValueOnce(new Error("Some database error"));
     await expect(
       userService.createUser({
@@ -150,13 +157,13 @@ describe("editUser", () => {
   });
 
   test("Should change the nickname", async () => {
-    const mockedEditedUser: EditUserDTO = {
+    const mockedEditedUser: ReadUserDTO = {
       ...defaultMockedUser,
       nickname: "NewNickname",
     };
     dbGetUserByIdMock.mockResolvedValueOnce(defaultMockedUser);
     dbEditUserMock.mockResolvedValueOnce(mockedEditedUser as ReadUserDTO);
-    const user = await userService.editUser(mockedEditedUser);
+    const user = await userService.editUser(mockedEditedUser as EditUserDTO);
     expect(user).toEqual(mockedEditedUser);
   });
 
@@ -174,12 +181,12 @@ describe("editUser", () => {
     dbGetUserByIdMock.mockResolvedValueOnce(null);
     await expect(
       userService.editUser({
-        ...defaultMockedUser
+        ...defaultMockedUser,
       })
     ).rejects.toThrow(BusinessError.USER_WITH_SUCH_ID_NOT_FOUND);
   });
 
-  test("Should throw the correct if database throws error", async () => {
+  test("Should throw the correct error if database throws error", async () => {
     dbGetUserByIdMock.mockRejectedValueOnce(new Error("Some database error"));
     await expect(
       userService.editUser({
@@ -203,17 +210,56 @@ describe("deleteUser", () => {
     dbGetUserByIdMock.mockResolvedValueOnce(null);
     await expect(
       userService.deleteUser({
-        ...defaultMockedUser
+        ...defaultMockedUser,
       })
     ).rejects.toThrow(BusinessError.USER_WITH_SUCH_ID_NOT_FOUND);
   });
 
-  test("Should throw the correct if database throws error", async () => {
+  test("Should throw the correct error if database throws error", async () => {
     dbGetUserByIdMock.mockRejectedValueOnce(new Error("Some database error"));
     await expect(
       userService.deleteUser({
         ...defaultMockedUser,
       })
     ).rejects.toThrow(BusinessError.PROBLEM_WITH_DATABASE);
+  });
+});
+
+describe("authenticateUser", () => {
+  test("Should throw the correct error if a user with such email not found", async () => {
+    dbGetUserByEmailMock.mockResolvedValueOnce(null);
+    await expect(
+      userService.authenticateUser(
+        fullMockedUser.email,
+        fullMockedUser.password
+      )
+    ).rejects.toThrow(BusinessError.USER_WITH_SUCH_EMAIL_OR_PASSWORD_NOT_FOUND);
+  });
+
+  test("Should throw the correct error if database throws error", async () => {
+    dbGetUserByEmailMock.mockRejectedValueOnce(
+      new Error("Some database error")
+    );
+    await expect(
+      userService.authenticateUser(
+        fullMockedUser.email,
+        fullMockedUser.password
+      )
+    ).rejects.toThrow(BusinessError.PROBLEM_WITH_DATABASE);
+  });
+
+  test("Should throw the correct error if password is wrong", async () => {
+    dbGetUserByEmailMock.mockResolvedValueOnce(fullMockedUser);
+    await expect(
+      userService.authenticateUser(fullMockedUser.email, "wrongPassword")
+    ).rejects.toThrow(BusinessError.USER_WITH_SUCH_EMAIL_OR_PASSWORD_NOT_FOUND);
+  });
+
+  test("Should return the user", async () => {
+    dbGetUserByEmailMock.mockResolvedValueOnce(fullMockedUser);
+    await expect(
+      userService.authenticateUser(fullMockedUser.email, fullMockedUser.password)
+    ).resolves.toEqual(defaultMockedUser);
+    expect(isPasswordEqualMock).toHaveBeenCalled();
   });
 });

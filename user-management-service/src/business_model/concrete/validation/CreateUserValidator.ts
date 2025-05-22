@@ -1,5 +1,5 @@
 import { CreateUserDTO, ReadUserDTO } from "shared-types";
-import { AbstractDatabase } from "../../database/abstract/AbstractDatabase";
+import { AbstractDatabase } from "../../../database/abstract/database";
 import { BusinessError } from "../error";
 
 export class CreateUserValidator {
@@ -32,13 +32,6 @@ export class CreateUserValidator {
     );
     if (userWithSameEmail) {
       throw new Error(BusinessError.USER_WITH_SUCH_EMAIL_ALREADY_EXISTS);
-    }
-
-    const userWithSameId = existingUsers.find(
-      (existingUser: ReadUserDTO) => existingUser.id === this.user.id
-    );
-    if (userWithSameId) {
-      throw new Error(BusinessError.USER_ID_NOT_UNIQUE);
     }
   }
 

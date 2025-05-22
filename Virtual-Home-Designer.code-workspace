@@ -11,6 +11,9 @@
 	  },
 	  {
 		"path": "shared-types"
+	  },
+	  {
+		"path": "shared-utils"
 	  }
 	]
   }

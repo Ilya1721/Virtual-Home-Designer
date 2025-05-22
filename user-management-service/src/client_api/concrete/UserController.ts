@@ -1,10 +1,10 @@
 import { CreateUserDTO, EditUserDTO } from "shared-types";
-import { HttpStatus } from "../../business_model/constants";
-import { getHttpStatusByError } from "../../business_model/error";
+import { getHttpStatusByError } from "../../business_model/concrete/error";
 import { UserService } from "../../business_model/UserService";
 import { AbstractRequest } from "../abstract/request";
 import { AbstractResponse } from "../abstract/response";
 import { USER_DELETED_SUCCESSFULLY } from "./constants";
+import { HttpStatus } from "shared-utils";
 
 export class UserController {
   constructor(private userService: UserService) {}
@@ -78,6 +78,20 @@ export class UserController {
       res.transformToJsonWithStatus(HttpStatus.OK, {
         message: USER_DELETED_SUCCESSFULLY,
       });
+    } catch (error) {
+      const httpStatus = getHttpStatusByError(error);
+      res.transformToJsonWithStatus(httpStatus, error);
+    }
+  }
+
+  public async authenticateUser(
+    req: AbstractRequest,
+    res: AbstractResponse
+  ): Promise<void> {
+    try {
+      const { email, password } = req.body;
+      const user = await this.userService.authenticateUser(email as string, password as string);
+      res.transformToJsonWithStatus(HttpStatus.OK, user);
     } catch (error) {
       const httpStatus = getHttpStatusByError(error);
       res.transformToJsonWithStatus(httpStatus, error);

@@ -1,14 +1,25 @@
-import { CreateUserDTO, DeleteUserDTO, EditUserDTO } from "shared-types";
-import { AbstractDatabase } from "../database/abstract/AbstractDatabase";
-import { CreateUserValidator } from "./validation/CreateUserValidator";
-import { EditUserValidator } from "./validation/EditUserValidator";
-import { DeleteUserValidator } from "./validation/DeleteUserValidator";
-import { BusinessError } from "./error";
+import {
+  CreateUserDTO,
+  DeleteUserDTO,
+  EditUserDTO,
+  FullUserDTO,
+  ReadUserDTO,
+} from "shared-types";
+import { AbstractDatabase } from "../database/abstract/database";
+import { BusinessError } from "./concrete/error";
+import { SafePasswordHandler } from "./abstract/password";
+import { AuthenticationValidator } from "./concrete/validation/AuthenticationValidator";
+import { CreateUserValidator } from "./concrete/validation/CreateUserValidator";
+import { DeleteUserValidator } from "./concrete/validation/DeleteUserValidator";
+import { EditUserValidator } from "./concrete/validation/EditUserValidator";
 
 export class UserService {
-  constructor(private database: AbstractDatabase) {}
+  constructor(
+    private database: AbstractDatabase,
+    private safePasswordHandler: SafePasswordHandler
+  ) {}
 
-  public async getAllUsers() {
+  public async getAllUsers(): Promise<ReadUserDTO[]> {
     try {
       return await this.database.getAllUsers();
     } catch (error) {
@@ -17,7 +28,7 @@ export class UserService {
     }
   }
 
-  public async getUserById(id: string) {
+  public async getUserById(id: string): Promise<ReadUserDTO | null> {
     try {
       return await this.database.getUserById(id);
     } catch (error) {
@@ -26,9 +37,11 @@ export class UserService {
     }
   }
 
-  public async createUser(user: CreateUserDTO) {
+  public async createUser(user: CreateUserDTO): Promise<ReadUserDTO> {
     const validator = new CreateUserValidator(user, this.database);
     await validator.validate();
+
+    user.password = await this.safePasswordHandler.getSafeString(user.password);
 
     try {
       return await this.database.createUser(user);
@@ -38,7 +51,7 @@ export class UserService {
     }
   }
 
-  public async editUser(user: EditUserDTO) {
+  public async editUser(user: EditUserDTO): Promise<ReadUserDTO | null> {
     const validator = new EditUserValidator(user, this.database);
     await validator.validate();
 
@@ -50,7 +63,7 @@ export class UserService {
     }
   }
 
-  public async deleteUser(user: DeleteUserDTO) {
+  public async deleteUser(user: DeleteUserDTO): Promise<void> {
     const validator = new DeleteUserValidator(user, this.database);
     await validator.validate();
 
@@ -60,5 +73,30 @@ export class UserService {
       console.error("Error deleting user", error);
       throw new Error(BusinessError.PROBLEM_WITH_DATABASE);
     }
+  }
+
+  public async authenticateUser(
+    email: string,
+    password: string
+  ): Promise<ReadUserDTO> {
+    let user: FullUserDTO | null = null;
+    try {
+      user = await this.database.getUserByEmail(email);
+    } catch (error) {
+      console.error("Error fetching user by email", error);
+      throw new Error(BusinessError.PROBLEM_WITH_DATABASE);
+    }
+
+    const authValidator = new AuthenticationValidator(
+      password,
+      user,
+      this.safePasswordHandler
+    );
+    await authValidator.validate();
+
+    const { password: userPassword, ...userWithoutPassword } =
+      user as FullUserDTO;
+
+    return userWithoutPassword as ReadUserDTO;
   }
 }

@@ -1,5 +1,5 @@
 import { DeleteUserDTO, ReadUserDTO } from "shared-types";
-import { AbstractDatabase } from "../../database/abstract/AbstractDatabase";
+import { AbstractDatabase } from "../../../database/abstract/database";
 import { BusinessError } from "../error";
 
 export class DeleteUserValidator {
