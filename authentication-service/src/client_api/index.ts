@@ -1,11 +1,11 @@
 import dotenv from "dotenv";
-import { UserService } from "../business_model/UserService";
-import { UserController } from "./concrete/UserController";
-import { MongoDBDatabase } from "../database/concrete/MongoDB/database";
-import { UserRouter } from "./concrete/ExpressJS/routes/user";
-import { Argon2PasswordHandler } from "./concrete/Argon2/password";
-import { ExpressJSServer } from "./concrete/ExpressJS/server";
 import { DB_URI_NOT_DEFINED } from "shared-utils";
+import { MongoDBDatabase } from "../database/concrete/MongoDB/database";
+import { ExpressJSServer } from "./concrete/ExpressJS/server";
+import { AuthRouter } from "./concrete/ExpressJS/routes/auth";
+import { AuthController } from "./concrete/AuthController";
+import { AuthService } from "../business_model/AuthService";
+import { JWTAuth } from "../business_model/concrete/JWTAuth/auth";
 
 const init = async () => {
   dotenv.config();
@@ -16,13 +16,13 @@ const init = async () => {
   const database = new MongoDBDatabase(databaseURI);
   await database.connect();
 
-  const safePasswordHandler = new Argon2PasswordHandler();
-  const userService = new UserService(database, safePasswordHandler);
-  const userController = new UserController(userService);
-  const userRouter = new UserRouter(userController);
+  const auth = new JWTAuth(database);
+  const authService = new AuthService(auth, database);
+  const authController = new AuthController(authService);
+  const authRouter = new AuthRouter(authController);
 
   const server = new ExpressJSServer();
-  server.connectRouters(userRouter);
+  server.connectRouters(authRouter);
   const port = parseInt(process.env.PORT || "3000");
   server.start(port);
 
@@ -33,6 +33,6 @@ const init = async () => {
       process.exit(0);
     })
   );
-};
+}
 
 init();

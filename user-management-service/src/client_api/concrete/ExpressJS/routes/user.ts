@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { UserController } from "../../UserController";
-import { getReqResPair } from "../../../factories/ExpressJSFactory";
-import { AbstractRouter } from "../../../abstract/router";
+import { AbstractRouter } from "shared-types";
+import { getReqResPair } from "shared-utils";
 
 export class UserRouter implements AbstractRouter {
   private router: Router;

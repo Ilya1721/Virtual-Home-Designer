@@ -1,6 +1,8 @@
-import { AuthToken } from "shared-types";
+import { AuthTokenPayload } from "shared-types";
 
 export interface AbstractAuth {
-  generateAccessToken(userId: string): AuthToken;
-  generateRefreshToken(userId: string): AuthToken;
+  generateAccessToken(authTokenPayload: AuthTokenPayload): string;
+  isAccessTokenValid(userId: string, token: string): Promise<boolean>;
+  generateRefreshToken(authTokenPayload: AuthTokenPayload): string;
+  isRefreshTokenValid(userId: string, token: string): Promise<boolean>;
 }

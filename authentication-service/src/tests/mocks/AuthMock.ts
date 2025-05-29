@@ -1,13 +1,20 @@
-import { AuthToken } from "shared-types";
+import { AuthTokenPayload } from "shared-types";
 import { AbstractAuth } from "../../business_model/abstract/auth";
-import { AuthTokenMock } from "./AuthTokenMock";
 
 export class AuthMock implements AbstractAuth {
-  public generateAccessToken(userId: string): AuthToken {
-    return new AuthTokenMock();
+  public generateAccessToken(authTokenPayload: AuthTokenPayload): string {
+    return "";
   }
 
-  public generateRefreshToken(userId: string): AuthToken {
-    return new AuthTokenMock();
+  public async isAccessTokenValid(userId: string, token: string): Promise<boolean> {
+    return true;
+  }
+
+  public generateRefreshToken(authTokenPayload: AuthTokenPayload): string {
+    return "";
+  }
+
+  public async isRefreshTokenValid(userId: string, token: string): Promise<boolean> {
+    return true;
   }
 }

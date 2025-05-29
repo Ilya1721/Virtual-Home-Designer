@@ -4,6 +4,7 @@ import {
   EditUserDTO,
   FullUserDTO,
   ReadUserDTO,
+  UserRole,
 } from "shared-types";
 import { UserService } from "../business_model/UserService";
 import { DatabaseMock } from "./mocks/DatabaseMock";
@@ -47,6 +48,7 @@ const defaultMockedUser: ReadUserDTO = {
   id: "1",
   email: "JohnDoe@gmail.com",
   nickname: "JohnDoe",
+  role: UserRole.USER,
   createdAt: new Date(),
 };
 

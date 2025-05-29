@@ -7,3 +7,5 @@ export enum HttpStatus {
   NOT_FOUND = 404,
   CONFLICT = 409
 }
+
+export const DB_URI_NOT_DEFINED = "Database URI is not defined";
