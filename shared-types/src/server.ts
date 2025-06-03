@@ -1,6 +1,7 @@
 export interface AbstractRequest<Body> {
   params: Record<string, string>;
   body: Body;
+  authHeader?: string;
 }
 
 export interface AbstractResponse<Data, Error> {

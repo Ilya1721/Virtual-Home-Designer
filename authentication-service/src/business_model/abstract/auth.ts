@@ -1,8 +1,7 @@
-import { AuthTokenPayload } from "shared-types";
+import { AuthTokenPayload, UserRole } from "shared-types";
 
 export interface AbstractAuth {
   generateAccessToken(authTokenPayload: AuthTokenPayload): string;
-  isAccessTokenValid(userId: string, token: string): Promise<boolean>;
   generateRefreshToken(authTokenPayload: AuthTokenPayload): string;
-  isRefreshTokenValid(userId: string, token: string): Promise<boolean>;
+  getTokenPayload(token: string): Promise<AuthTokenPayload | null>;
 }

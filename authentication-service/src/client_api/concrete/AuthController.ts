@@ -4,7 +4,6 @@ import {
   AuthenticateUserDTO,
   CreateUserDTO,
   IsAuthenticatedReqDTO,
-  IsAuthenticatedResDTO,
   RefreshAccessReqDTO,
   RefreshAccessResDTO,
   SignUpDTO,
@@ -63,16 +62,17 @@ export class AuthController {
 
   public async isAuthenticated(
     req: AbstractRequest<IsAuthenticatedReqDTO>,
-    res: AbstractResponse<IsAuthenticatedResDTO, unknown>
+    res: AbstractResponse<boolean, unknown>
   ): Promise<void> {
     try {
       const userId = req.params.id;
-      const { accessToken } = req.body;
+      const { accessToken, allowedRoles } = req.body;
       const isAuthenticated = await this.authService.isAuthenticated(
         userId,
-        accessToken
+        accessToken,
+        allowedRoles
       );
-      res.transformDataToJsonWithStatus(HttpStatus.OK, { isAuthenticated });
+      res.transformDataToJsonWithStatus(HttpStatus.OK, isAuthenticated);
     } catch (error) {
       const httpStatus = getHttpStatusByError(error);
       res.transformErrorToJsonWithStatus(httpStatus, error);
@@ -84,9 +84,9 @@ export class AuthController {
     res: AbstractResponse<RefreshAccessResDTO, unknown>
   ): Promise<void> {
     try {
-      const { authTokenPayload, refreshToken } = req.body;
+      const { userId, refreshToken } = req.body;
       const newAccessToken = await this.authService.refreshAccess(
-        authTokenPayload,
+        userId,
         refreshToken
       );
       res.transformDataToJsonWithStatus(HttpStatus.OK, {

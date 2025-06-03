@@ -1,21 +1,30 @@
-import { AuthTokenPayload, CreateUserDTO, ReadUserDTO, SignInDTO, SignUpDTO, UserRole } from "shared-types";
+import {
+  AuthTokenPayload,
+  CreateUserDTO,
+  ReadUserDTO,
+  SignInDTO,
+  SignUpDTO,
+  UserRole,
+} from "shared-types";
 import { AuthMock } from "./mocks/AuthMock";
 import { AuthService } from "../business_model/AuthService";
 import { DatabaseMock } from "./mocks/DatabaseMock";
-import * as UserManagement from "../communication/UserManagement";
+import * as UserManagement from "../services_communication/UserManagement";
 import { BusinessError } from "../business_model/concrete/error";
 
 const newUser: CreateUserDTO = {
   email: "johndoe@gmail.com",
   password: "password",
   nickname: "John Doe",
-  role: UserRole.USER
+  role: UserRole.USER,
 };
 
 const authTokenPayloadMock: AuthTokenPayload = {
   userId: "1",
-  role: UserRole.USER
-}
+  role: UserRole.USER,
+};
+
+const validRefreshToken = "ValidRefreshToken";
 
 const authMock = new AuthMock();
 const databaseMock = new DatabaseMock();
@@ -48,15 +57,17 @@ const authenticateUserMock = jest
       } as ReadUserDTO;
     }
   );
-const validateAccessTokenMock = jest
-  .spyOn(authMock, "isAccessTokenValid")
-  .mockImplementation(async (userId: string, token: string): Promise<boolean> => {
-    return true;
-  });
-const validateRefreshTokenMock = jest
-  .spyOn(authMock, "isRefreshTokenValid")
-  .mockImplementation(async (userId: string, token: string): Promise<boolean> => {
-    return true;
+const getTokenPayloadMock = jest
+  .spyOn(authMock, "getTokenPayload")
+  .mockImplementation(
+    async (token: string): Promise<AuthTokenPayload | null> => {
+      return authTokenPayloadMock;
+    }
+  );
+const getRefreshTokenMock = jest
+  .spyOn(databaseMock, "getRefreshToken")
+  .mockImplementation(async (userId: string): Promise<string> => {
+    return validRefreshToken;
   });
 
 const testAuthenticateResponse = (
@@ -109,30 +120,75 @@ describe("SignOut", () => {
 });
 
 describe("isAuthenticated", () => {
-  test("Should validate the access token and decide the user is authenticated", async () => {
-    const userId = "1";
-    const accessTokenMock = "AccessToken";
-    expect(await authService.isAuthenticated(userId, accessTokenMock)).toBe(true);
-    expect(validateAccessTokenMock).toHaveBeenCalledWith(userId, accessTokenMock);
+  test("Should return false if token is invalid", async () => {
+    getTokenPayloadMock.mockResolvedValueOnce(null);
+    const isAuthenticated = await authService.isAuthenticated(
+      authTokenPayloadMock.userId,
+      "InvalidToken",
+      []
+    );
+    expect(isAuthenticated).toBe(false);
+  });
+
+  test("Should return false if the token belongs to other user", async () => {
+    const isAuthenticated = await authService.isAuthenticated("OtherUserId", "Token", []);
+    expect(isAuthenticated).toBe(false);
+  });
+
+  test("Should return false if the user doesn't have a required role", async () => {
+    const isAuthenticated = await authService.isAuthenticated(
+      authTokenPayloadMock.userId,
+      "Token",
+      [UserRole.ADMIN]
+    );
+    expect(isAuthenticated).toBe(false);
+  });
+
+  test("Should return true if the token is valid and the user has the required role", async () => {
+    const isAuthenticated = await authService.isAuthenticated(
+      authTokenPayloadMock.userId,
+      "Token",
+      [UserRole.USER]
+    );
+    expect(isAuthenticated).toBe(true);
+  });
+
+  test("Should return true if the token is valid and any role is allowed", async () => {
+    const isAuthenticated = await authService.isAuthenticated(
+      authTokenPayloadMock.userId,
+      "Token",
+      []
+    );
+    expect(isAuthenticated).toBe(true);
   });
 });
 
 describe("refreshAccess", () => {
   test("Should throw the correct error if the refresh token is not valid", async () => {
-    validateRefreshTokenMock.mockImplementationOnce(
-      async (userId: string, token: string): Promise<boolean> => {
-        return false;
-      }
-    );
-    await expect(authService.refreshAccess(authTokenPayloadMock, "InvalidRefreshToken")).rejects.toThrow(
-      BusinessError.INVALID_REFRESH_TOKEN
-    );
+    getTokenPayloadMock.mockResolvedValueOnce(null);
+    await expect(
+      authService.refreshAccess(authTokenPayloadMock.userId, "InvalidRefreshToken")
+    ).rejects.toThrow(BusinessError.INVALID_REFRESH_TOKEN);
+  });
+
+  test("Should throw the correct error if the token belongs to other user", async () => {
+    await expect(
+      authService.refreshAccess("otherUserId", "InvalidRefreshToken")
+    ).rejects.toThrow(BusinessError.INVALID_REFRESH_TOKEN);
+  });
+
+  test("Should throw the correct error if the token is not the same as in the Database", async () => {
+    await expect(
+      authService.refreshAccess(authTokenPayloadMock.userId, "DifferentRefreshToken")
+    ).rejects.toThrow(BusinessError.INVALID_REFRESH_TOKEN);
   });
 
   test("Should successfuly generate a new access token", async () => {
-    const refreshTokenMock = "RefreshToken";
-    const accessToken = await authService.refreshAccess(authTokenPayloadMock, refreshTokenMock);
+    const accessToken = await authService.refreshAccess(
+      authTokenPayloadMock.userId,
+      validRefreshToken
+    );
     expect(generateAccessTokenMock).toHaveBeenCalledWith(authTokenPayloadMock);
-    expect(accessToken).not.toEqual(refreshTokenMock);
+    expect(accessToken).not.toEqual(validRefreshToken);
   });
 });

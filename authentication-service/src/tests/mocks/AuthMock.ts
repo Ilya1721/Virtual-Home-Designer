@@ -1,4 +1,4 @@
-import { AuthTokenPayload } from "shared-types";
+import { AuthTokenPayload, UserRole } from "shared-types";
 import { AbstractAuth } from "../../business_model/abstract/auth";
 
 export class AuthMock implements AbstractAuth {
@@ -6,15 +6,14 @@ export class AuthMock implements AbstractAuth {
     return "";
   }
 
-  public async isAccessTokenValid(userId: string, token: string): Promise<boolean> {
-    return true;
-  }
-
   public generateRefreshToken(authTokenPayload: AuthTokenPayload): string {
     return "";
   }
 
-  public async isRefreshTokenValid(userId: string, token: string): Promise<boolean> {
-    return true;
+  public async getTokenPayload(token: string): Promise<AuthTokenPayload | null> {
+    return {
+      userId: "1",
+      role: UserRole.USER,
+    };
   }
 }

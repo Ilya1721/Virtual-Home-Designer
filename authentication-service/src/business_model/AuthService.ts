@@ -4,10 +4,14 @@ import {
   SignInDTO,
   ReadUserDTO,
   AuthTokenPayload,
+  UserRole,
 } from "shared-types";
 import { AbstractAuth } from "./abstract/auth";
 import { AbstractDatabase } from "../database/abstract/database";
-import { authenticateUser, createUser } from "../communication/UserManagement";
+import {
+  authenticateUser,
+  createUser,
+} from "../services_communication/UserManagement";
 import { BusinessError } from "./concrete/error";
 
 export class AuthService {
@@ -29,23 +33,38 @@ export class AuthService {
 
   public async isAuthenticated(
     userId: string,
-    accessToken: string
+    accessToken: string,
+    allowedRoles: UserRole[]
   ): Promise<boolean> {
-    return await this.auth.isAccessTokenValid(userId, accessToken);
+    const authTokenPayload = await this.auth.getTokenPayload(accessToken);
+    if (!this.isAuthTokenPayloadValid(authTokenPayload, userId)) {
+      return false;
+    }
+    return !allowedRoles.length
+      ? true
+      : allowedRoles.includes(authTokenPayload!.role);
   }
 
   public async refreshAccess(
-    authTokenPayload: AuthTokenPayload,
+    userId: string,
     refreshToken: string
   ): Promise<string> {
-    const isTokenValid = await this.auth.isRefreshTokenValid(
-      authTokenPayload.userId,
-      refreshToken
-    );
-    if (!isTokenValid) {
+    const authTokenPayload = await this.auth.getTokenPayload(refreshToken);
+    const refreshTokenFromDB = await this.database.getRefreshToken(userId);
+    if (
+      !this.isAuthTokenPayloadValid(authTokenPayload, userId) ||
+      refreshToken !== refreshTokenFromDB
+    ) {
       throw new Error(BusinessError.INVALID_REFRESH_TOKEN);
     }
-    return this.auth.generateAccessToken(authTokenPayload);
+    return this.auth.generateAccessToken(authTokenPayload!);
+  }
+
+  private isAuthTokenPayloadValid(
+    tokenPayload: AuthTokenPayload | null,
+    userId: string
+  ): boolean {
+    return tokenPayload?.userId === userId;
   }
 
   private async getAuthData(user: ReadUserDTO): Promise<SignInDTO> {

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { UserController } from "../../UserController";
-import { AbstractRouter } from "shared-types";
-import { getReqResPair } from "shared-utils";
+import { AbstractRouter, UserRole } from "shared-types";
+import { getReqResPair, requireAuthentication } from "shared-utils";
 
 export class UserRouter implements AbstractRouter {
   private router: Router;
@@ -12,13 +12,17 @@ export class UserRouter implements AbstractRouter {
   }
 
   private setGetAllUsersRoute() {
-    this.router.get("/", async (req, res) => {
-      await this.userController.getAllUsers(...getReqResPair(req, res));
-    });
+    this.router.get(
+      "/",
+      requireAuthentication(UserRole.ADMIN),
+      async (req, res) => {
+        await this.userController.getAllUsers(...getReqResPair(req, res));
+      }
+    );
   }
 
   private setGetUserByIdRoute() {
-    this.router.get("/:id", async (req, res) => {
+    this.router.get("/:id", requireAuthentication(), async (req, res) => {
       await this.userController.getUserById(...getReqResPair(req, res));
     });
   }
@@ -30,13 +34,13 @@ export class UserRouter implements AbstractRouter {
   }
 
   private setEditUserRoute() {
-    this.router.put("/:id", async (req, res) => {
+    this.router.put("/:id", requireAuthentication(), async (req, res) => {
       await this.userController.editUser(...getReqResPair(req, res));
     });
   }
 
   private setDeleteUserRoute() {
-    this.router.delete("/:id", async (req, res) => {
+    this.router.delete("/:id", requireAuthentication(UserRole.ADMIN), async (req, res) => {
       await this.userController.deleteUser(...getReqResPair(req, res));
     });
   }

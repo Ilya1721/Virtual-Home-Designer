@@ -10,23 +10,12 @@ const refreshTokenExpiresIn =
   Number(process.env.RERFRESH_TOKEN_EXPIRES_IN_SECONDS) || 604800;
 
 export class JWTAuth implements AbstractAuth {
-  constructor(private database: AbstractDatabase) {}
+  constructor() {}
 
   public generateAccessToken(authTokenPayload: AuthTokenPayload): string {
     return jwt.sign(authTokenPayload, jwtTokenSecret, {
       expiresIn: accessTokenExpiresIn,
     });
-  }
-
-  public async isAccessTokenValid(
-    userId: string,
-    token: string
-  ): Promise<boolean> {
-    const authTokenPayload = await this.getAuthTokenPayload(token);
-    return (
-      !!authTokenPayload &&
-      this.isAuthTokenPayloadValid(authTokenPayload, userId)
-    );
   }
 
   public generateRefreshToken(authTokenPayload: AuthTokenPayload): string {
@@ -35,7 +24,7 @@ export class JWTAuth implements AbstractAuth {
     });
   }
 
-  public async isRefreshTokenValid(
+  /*public async isRefreshTokenValid(
     userId: string,
     token: string
   ): Promise<boolean> {
@@ -46,16 +35,9 @@ export class JWTAuth implements AbstractAuth {
       !!authTokenPayload &&
       this.isAuthTokenPayloadValid(authTokenPayload, userId)
     );
-  }
+  }*/
 
-  private async isAuthTokenPayloadValid(
-    tokenPayload: AuthTokenPayload,
-    userId: string
-  ): Promise<boolean> {
-    return tokenPayload.userId === userId;
-  }
-
-  private async getAuthTokenPayload(
+  public async getTokenPayload(
     token: string
   ): Promise<AuthTokenPayload | null> {
     return new Promise((resolve, reject) => {

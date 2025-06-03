@@ -34,7 +34,7 @@ export class AuthRouter implements AbstractRouter {
   }
 
   private setIsAuthenticatedRoute(): void {
-    this.router.get("/status/:id", async (req, res) => {
+    this.router.post("/status/:id", async (req, res) => {
       await this.authController.isAuthenticated(...getReqResPair(req, res));
     });
   }

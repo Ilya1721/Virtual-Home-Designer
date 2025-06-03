@@ -19,14 +19,11 @@ export type AuthTokenPayload = {
 
 export type IsAuthenticatedReqDTO = {
   accessToken: string;
-};
-
-export type IsAuthenticatedResDTO = {
-  isAuthenticated: boolean;
+  allowedRoles: UserRole[];
 };
 
 export type RefreshAccessReqDTO = {
-  authTokenPayload: AuthTokenPayload;
+  userId: string;
   refreshToken: string;
 };
 

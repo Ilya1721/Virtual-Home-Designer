@@ -16,7 +16,7 @@ const init = async () => {
   const database = new MongoDBDatabase(databaseURI);
   await database.connect();
 
-  const auth = new JWTAuth(database);
+  const auth = new JWTAuth();
   const authService = new AuthService(auth, database);
   const authController = new AuthController(authService);
   const authRouter = new AuthRouter(authController);
