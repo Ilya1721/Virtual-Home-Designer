@@ -95,6 +95,19 @@ describe("SignUp", () => {
     testAuthenticateResponse(signUpResponse, newUser);
     expect(createUserMock).toHaveBeenCalledWith(newUser);
   });
+
+  test("Should return data with exactly the same properties as ReadUserDTO", async () => {
+    createUserMock.mockImplementationOnce(
+      async (user: CreateUserDTO): Promise<ReadUserDTO> => {
+        return {
+          ...user,
+          password: "password",
+        } as any;
+      }
+    );
+    const signUpResponse = await authService.signUp(newUser);
+    expect(signUpResponse).not.toHaveProperty("password");
+  });
 });
 
 describe("SignIn", () => {
@@ -108,6 +121,26 @@ describe("SignIn", () => {
       newUser.email,
       newUser.password
     );
+  });
+
+  test("Should return data with exactly the same properties as ReadUserDTO", async () => {
+    authenticateUserMock.mockImplementationOnce(
+      async (email: string, password: string): Promise<ReadUserDTO> => {
+        return {
+          id: "1",
+          email: email,
+          nickname: "John Doe",
+          role: UserRole.USER,
+          createdAt: new Date(),
+          password: "password",
+        } as any;
+      }
+    );
+    const signInResponse: SignUpDTO = await authService.signIn(
+      newUser.email,
+      newUser.password
+    );
+    expect(signInResponse).not.toHaveProperty("password");
   });
 });
 
@@ -131,7 +164,11 @@ describe("isAuthenticated", () => {
   });
 
   test("Should return false if the token belongs to other user", async () => {
-    const isAuthenticated = await authService.isAuthenticated("OtherUserId", "Token", []);
+    const isAuthenticated = await authService.isAuthenticated(
+      "OtherUserId",
+      "Token",
+      []
+    );
     expect(isAuthenticated).toBe(false);
   });
 
@@ -167,7 +204,10 @@ describe("refreshAccess", () => {
   test("Should throw the correct error if the refresh token is not valid", async () => {
     getTokenPayloadMock.mockResolvedValueOnce(null);
     await expect(
-      authService.refreshAccess(authTokenPayloadMock.userId, "InvalidRefreshToken")
+      authService.refreshAccess(
+        authTokenPayloadMock.userId,
+        "InvalidRefreshToken"
+      )
     ).rejects.toThrow(BusinessError.INVALID_REFRESH_TOKEN);
   });
 
@@ -179,7 +219,10 @@ describe("refreshAccess", () => {
 
   test("Should throw the correct error if the token is not the same as in the Database", async () => {
     await expect(
-      authService.refreshAccess(authTokenPayloadMock.userId, "DifferentRefreshToken")
+      authService.refreshAccess(
+        authTokenPayloadMock.userId,
+        "DifferentRefreshToken"
+      )
     ).rejects.toThrow(BusinessError.INVALID_REFRESH_TOKEN);
   });
 

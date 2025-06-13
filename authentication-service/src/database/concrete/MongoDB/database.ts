@@ -1,12 +1,11 @@
 import mongoose from "mongoose";
 import { AbstractDatabase } from "../../abstract/database";
 import { UserAuth, UserAuthModel } from "./models/userAuth";
+import { connectMongoose } from "shared-utils";
 
 export class MongoDBDatabase implements AbstractDatabase {
-  constructor(private uri: string) {}
-
   public async connect(): Promise<void> {
-    await mongoose.connect(this.uri);
+    await connectMongoose(mongoose);
   }
 
   public async disconnect(): Promise<void> {

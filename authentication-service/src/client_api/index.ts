@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import { DB_URI_NOT_DEFINED } from "shared-utils";
 import { MongoDBDatabase } from "../database/concrete/MongoDB/database";
 import { ExpressJSServer } from "./concrete/ExpressJS/server";
 import { AuthRouter } from "./concrete/ExpressJS/routes/auth";
@@ -9,11 +8,7 @@ import { JWTAuth } from "../business_model/concrete/JWTAuth/auth";
 
 const init = async () => {
   dotenv.config();
-  const databaseURI = process.env.MONGODB_URI;
-  if (!databaseURI) {
-    throw new Error(DB_URI_NOT_DEFINED);
-  }
-  const database = new MongoDBDatabase(databaseURI);
+  const database = new MongoDBDatabase();
   await database.connect();
 
   const auth = new JWTAuth();

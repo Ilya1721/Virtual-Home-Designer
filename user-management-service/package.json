@@ -4,7 +4,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/client_api/index.ts",
-    "test": "jest"
+    "test": "jest",
+    "migrate-up": "npx tsc && npx migrate-mongo up",
+    "migrate-down": "npx tsc && npx migrate-mongo down",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -14,7 +17,7 @@
     "argon2": "^0.43.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "mongoose": "^8.14.2",
+    "mongoose": "^8.15.1",
     "shared-types": "file:../shared-types",
     "shared-utils": "file:../shared-utils"
   },

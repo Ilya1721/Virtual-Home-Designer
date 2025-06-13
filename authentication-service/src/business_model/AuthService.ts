@@ -13,6 +13,7 @@ import {
   createUser,
 } from "../services_communication/UserManagement";
 import { BusinessError } from "./concrete/error";
+import { toReadUserDTO } from "shared-utils";
 
 export class AuthService {
   constructor(private auth: AbstractAuth, private database: AbstractDatabase) {}
@@ -79,7 +80,7 @@ export class AuthService {
     await this.database.setRefreshToken(user.id, refreshToken);
 
     return {
-      ...user,
+      ...toReadUserDTO(user),
       accessToken: accessToken,
       refreshToken: refreshToken,
     };

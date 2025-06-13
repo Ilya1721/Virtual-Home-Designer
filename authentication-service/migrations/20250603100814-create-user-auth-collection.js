@@ -1,16 +1,16 @@
-const { UserModel } = require("../dist/database/concrete/MongoDB/models/user");
+const { UserAuthModel } = require("../dist/database/concrete/MongoDB/models/userAuth");
 const { connectMongoose } = require("shared-utils");
 const mongoose = require("mongoose");
 
 async function up(db, client) {
   await connectMongoose(mongoose);
-  await UserModel.createCollection();
-  await UserModel.syncIndexes();
+  await UserAuthModel.createCollection();
+  await UserAuthModel.syncIndexes();
 }
 
 async function down(db, client) {
   await connectMongoose(mongoose);
-  await UserModel.collection.drop();
+  await UserAuthModel.collection.drop();
 }
 
 module.exports = { up, down };

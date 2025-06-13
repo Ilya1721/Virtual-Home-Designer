@@ -6,7 +6,7 @@
       "request": "launch",
       "name": "Debug User management service",
       "preLaunchTask": "tsc: build - tsconfig.json",
-      "program": "${workspaceFolder}/dist/index.js",
+      "program": "${workspaceFolder}/src/client_api/index.ts",
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "runtimeArgs": ["--nolazy"],
       "sourceMaps": true,

@@ -12,6 +12,7 @@ import { AuthenticationValidator } from "./concrete/validation/AuthenticationVal
 import { CreateUserValidator } from "./concrete/validation/CreateUserValidator";
 import { DeleteUserValidator } from "./concrete/validation/DeleteUserValidator";
 import { EditUserValidator } from "./concrete/validation/EditUserValidator";
+import { toReadUserDTO, toReadUserDTOArray } from "shared-utils";
 
 export class UserService {
   constructor(
@@ -21,7 +22,8 @@ export class UserService {
 
   public async getAllUsers(): Promise<ReadUserDTO[]> {
     try {
-      return await this.database.getAllUsers();
+      const users = await this.database.getAllUsers();
+      return toReadUserDTOArray(users);
     } catch (error) {
       console.error("Error fetching all users", error);
       throw new Error(BusinessError.PROBLEM_WITH_DATABASE);
@@ -30,7 +32,8 @@ export class UserService {
 
   public async getUserById(id: string): Promise<ReadUserDTO | null> {
     try {
-      return await this.database.getUserById(id);
+      const user = await this.database.getUserById(id);
+      return user ? toReadUserDTO(user) : null;
     } catch (error) {
       console.error(`Error fetching user by ID: ${id}`, error);
       throw new Error(BusinessError.PROBLEM_WITH_DATABASE);
@@ -44,7 +47,8 @@ export class UserService {
     user.password = await this.safePasswordHandler.getSafeString(user.password);
 
     try {
-      return await this.database.createUser(user);
+      const createdUser = await this.database.createUser(user);
+      return toReadUserDTO(createdUser);
     } catch (error) {
       console.error("Error creating user", error);
       throw new Error(BusinessError.PROBLEM_WITH_DATABASE);
@@ -56,7 +60,8 @@ export class UserService {
     await validator.validate();
 
     try {
-      return await this.database.editUser(user);
+      const editedUser = await this.database.editUser(user);
+      return editedUser ? toReadUserDTO(editedUser) : null;
     } catch (error) {
       console.error("Error editing user", error);
       throw new Error(BusinessError.PROBLEM_WITH_DATABASE);
@@ -94,9 +99,6 @@ export class UserService {
     );
     await authValidator.validate();
 
-    const { password: userPassword, ...userWithoutPassword } =
-      user as FullUserDTO;
-
-    return userWithoutPassword as ReadUserDTO;
+    return toReadUserDTO(user!);
   }
 }

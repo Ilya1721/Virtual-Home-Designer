@@ -5,15 +5,10 @@ import { MongoDBDatabase } from "../database/concrete/MongoDB/database";
 import { UserRouter } from "./concrete/ExpressJS/routes/user";
 import { Argon2PasswordHandler } from "./concrete/Argon2/password";
 import { ExpressJSServer } from "./concrete/ExpressJS/server";
-import { DB_URI_NOT_DEFINED } from "shared-utils";
 
 const init = async () => {
   dotenv.config();
-  const databaseURI = process.env.MONGODB_URI;
-  if (!databaseURI) {
-    throw new Error(DB_URI_NOT_DEFINED);
-  }
-  const database = new MongoDBDatabase(databaseURI);
+  const database = new MongoDBDatabase();
   await database.connect();
 
   const safePasswordHandler = new Argon2PasswordHandler();

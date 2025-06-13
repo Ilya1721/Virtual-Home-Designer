@@ -10,6 +10,7 @@ import { UserService } from "../business_model/UserService";
 import { DatabaseMock } from "./mocks/DatabaseMock";
 import { BusinessError } from "../business_model/concrete/error";
 import { SafePasswordHandlerMock } from "./mocks/SafePasswordHandlerMock";
+import { mock } from "node:test";
 
 const database = new DatabaseMock();
 const safePasswordHandler = new SafePasswordHandlerMock();
@@ -35,14 +36,10 @@ const dbDeleteUserMock = jest.spyOn(database, "deleteUser");
 dbDeleteUserMock.mockImplementation((user: DeleteUserDTO) =>
   database.deleteUser(user)
 );
-const isPasswordEqualMock = jest.spyOn(
-  safePasswordHandler,
-  "isEqual"
-);
-const getSafePasswordMock = jest.spyOn(
-  safePasswordHandler,
-  "getSafeString"
-);
+const isPasswordEqualMock = jest.spyOn(safePasswordHandler, "isEqual");
+const getSafePasswordMock = jest.spyOn(safePasswordHandler, "getSafeString");
+
+jest.spyOn(console, "error").mockImplementation(() => {});
 
 const defaultMockedUser: ReadUserDTO = {
   id: "1",
@@ -54,7 +51,12 @@ const defaultMockedUser: ReadUserDTO = {
 
 const fullMockedUser: FullUserDTO = {
   ...defaultMockedUser,
-  password: "password123",
+  password: "password",
+};
+
+const userWithPassword: any = {
+  ...defaultMockedUser,
+  password: "password",
 };
 
 describe("getAllUsers", () => {
@@ -70,6 +72,14 @@ describe("getAllUsers", () => {
     await expect(userService.getAllUsers()).rejects.toThrow(
       BusinessError.PROBLEM_WITH_DATABASE
     );
+  });
+
+  test("Should return users with exactly the same properties as ReadUserDTO", async () => {
+    dbGetAllUsersMock.mockResolvedValueOnce([userWithPassword]);
+    const users = await userService.getAllUsers();
+    users.forEach((user) => {
+      expect(user).not.toHaveProperty("password");
+    });
   });
 });
 
@@ -92,6 +102,12 @@ describe("getUserById", () => {
     const user = await userService.getUserById("1");
     expect(user).toBeNull();
   });
+
+  test("Should return users with exactly the same properties as ReadUserDTO", async () => {
+    dbGetUserByIdMock.mockResolvedValueOnce(userWithPassword);
+    const user = await userService.getUserById("1");
+    expect(user).not.toHaveProperty("password");
+  });
 });
 
 describe("createUser", () => {
@@ -100,10 +116,7 @@ describe("createUser", () => {
   test("Should create and return correct user", async () => {
     dbGetAllUsersMock.mockResolvedValueOnce([]);
     dbCreateUserMock.mockResolvedValueOnce(defaultMockedUser);
-    const user = await userService.createUser({
-      ...defaultMockedUser,
-      password: "password123",
-    });
+    const user = await userService.createUser(userWithPassword);
     expect(user).toEqual(defaultMockedUser);
     expect(getSafePasswordMock).toHaveBeenCalled();
   });
@@ -119,6 +132,7 @@ describe("createUser", () => {
   });
 
   test("Should throw the correct error if database throws error", async () => {
+    dbGetAllUsersMock.mockResolvedValueOnce([]);
     dbCreateUserMock.mockRejectedValueOnce(new Error("Some database error"));
     await expect(
       userService.createUser({
@@ -145,6 +159,13 @@ describe("createUser", () => {
         password: "",
       })
     ).rejects.toThrow(BusinessError.USER_PASSWORD_NOT_VALID);
+  });
+
+  test("Should return users with exactly the same properties as ReadUserDTO", async () => {
+    dbGetAllUsersMock.mockResolvedValueOnce([]);
+    dbCreateUserMock.mockResolvedValueOnce(userWithPassword);
+    const user = await userService.createUser(userWithPassword);
+    expect(user).not.toHaveProperty("password");
   });
 });
 
@@ -195,6 +216,13 @@ describe("editUser", () => {
         ...defaultMockedUser,
       })
     ).rejects.toThrow(BusinessError.PROBLEM_WITH_DATABASE);
+  });
+
+  test("Should return users with exactly the same properties as ReadUserDTO", async () => {
+    dbGetUserByIdMock.mockResolvedValueOnce(userWithPassword);
+    dbEditUserMock.mockResolvedValueOnce(userWithPassword as ReadUserDTO);
+    const user = await userService.editUser(userWithPassword as EditUserDTO);
+    expect(user).not.toHaveProperty("password");
   });
 });
 
@@ -260,8 +288,20 @@ describe("authenticateUser", () => {
   test("Should return the user", async () => {
     dbGetUserByEmailMock.mockResolvedValueOnce(fullMockedUser);
     await expect(
-      userService.authenticateUser(fullMockedUser.email, fullMockedUser.password)
+      userService.authenticateUser(
+        fullMockedUser.email,
+        fullMockedUser.password
+      )
     ).resolves.toEqual(defaultMockedUser);
     expect(isPasswordEqualMock).toHaveBeenCalled();
+  });
+
+  test("Should return users with exactly the same properties as ReadUserDTO", async () => {
+    dbGetUserByEmailMock.mockResolvedValueOnce(fullMockedUser);
+    const authenticatedUser = await userService.authenticateUser(
+      fullMockedUser.email,
+      fullMockedUser.password
+    );
+    expect(authenticatedUser).not.toHaveProperty("password");
   });
 });
