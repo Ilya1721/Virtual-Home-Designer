@@ -8,7 +8,7 @@ export class ExpressJSServer extends AbstractExpressJSServer implements Abstract
 
   public connectRouters(userRouter: AbstractRouter): void {
     userRouter.connectRouter((router) => {
-      this.app.use("/users", router);
+      this.app.use("/api/users", router);
     });
   }
 }

@@ -18,7 +18,7 @@ const init = async () => {
 
   const server = new ExpressJSServer();
   server.connectRouters(userRouter);
-  const port = parseInt(process.env.PORT || "3000");
+  const port = parseInt(process.env.PORT!);
   server.start(port);
 
   ["SIGINT", "SIGTERM"].forEach((signal) =>

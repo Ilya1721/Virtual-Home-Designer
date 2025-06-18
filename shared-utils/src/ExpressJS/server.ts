@@ -1,6 +1,7 @@
 import { AbstractRouter, AbstractServer } from "shared-types";
 import express from "express";
 import { Express } from "express-serve-static-core";
+import cookieParser from "cookie-parser";
 
 export abstract class AbstractExpressJSServer implements AbstractServer {
   protected app!: Express;
@@ -12,6 +13,7 @@ export abstract class AbstractExpressJSServer implements AbstractServer {
   private initServer() {
     this.app = express();
     this.app.use(express.json());
+    this.app.use(cookieParser());
   }
 
   public async start(port: number): Promise<void> {

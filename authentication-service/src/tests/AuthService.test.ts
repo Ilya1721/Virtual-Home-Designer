@@ -2,8 +2,6 @@ import {
   AuthTokenPayload,
   CreateUserDTO,
   ReadUserDTO,
-  SignInDTO,
-  SignUpDTO,
   UserRole,
 } from "shared-types";
 import { AuthMock } from "./mocks/AuthMock";
@@ -11,6 +9,7 @@ import { AuthService } from "../business_model/AuthService";
 import { DatabaseMock } from "./mocks/DatabaseMock";
 import * as UserManagement from "../services_communication/UserManagement";
 import { BusinessError } from "../business_model/concrete/error";
+import { SignInDTO, SignUpDTO } from "../business_model/abstract/auth";
 
 const newUser: CreateUserDTO = {
   email: "johndoe@gmail.com",
@@ -74,17 +73,17 @@ const testAuthenticateResponse = (
   response: SignUpDTO | SignInDTO,
   user: ReadUserDTO | CreateUserDTO
 ) => {
-  expect(response).toHaveProperty("id");
-  expect(response).toHaveProperty("email", user.email);
-  expect(response).toHaveProperty("nickname", user.nickname);
-  expect(response).toHaveProperty("role", user.role);
+  expect(response.user).toHaveProperty("id");
+  expect(response.user).toHaveProperty("email", user.email);
+  expect(response.user).toHaveProperty("nickname", user.nickname);
+  expect(response.user).toHaveProperty("role", user.role);
   expect(response).toHaveProperty("accessToken");
   expect(response).toHaveProperty("refreshToken");
 
   expect(generateAccessTokenMock).toHaveBeenCalledWith(authTokenPayloadMock);
   expect(generateRefreshTokenMock).toHaveBeenCalledWith(authTokenPayloadMock);
   expect(setRefreshTokenMock).toHaveBeenCalledWith(
-    response.id,
+    response.user.id,
     response.refreshToken
   );
 };

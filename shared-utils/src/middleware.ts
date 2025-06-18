@@ -7,19 +7,21 @@ export const requireAuthentication = async (
   res: AbstractResponse<unknown, unknown>,
   allowedRoles: UserRole[] = []
 ): Promise<void> => {
-  const authHeader = req.authHeader;
-  if (!authHeader?.startsWith(BEARER)) {
-    return res.transformErrorToJsonWithStatus(HttpStatus.UNAUTHORIZED, {
-      error: USER_NOT_AUTHORIZED,
-    });
+  let accessToken = "";
+  const { authHeader } = req;
+
+  if (authHeader && isAuthHeaderValid(authHeader)) {
+    accessToken = authHeader.split(" ")[1];
+  } else {
+    accessToken = req.cookies.accessToken;
   }
 
-  const authToken = authHeader.split(" ")[1];
-  const isUserAuthenticated = await isAuthenticated(
+  const isUserAuthenticated = !!accessToken && await isAuthenticated(
     req.params.id,
-    authToken,
+    accessToken,
     allowedRoles
   );
+
   if (!isUserAuthenticated) {
     return res.transformErrorToJsonWithStatus(HttpStatus.UNAUTHORIZED, {
       error: USER_NOT_AUTHORIZED,
@@ -29,4 +31,8 @@ export const requireAuthentication = async (
   return res.transformDataToJsonWithStatus(HttpStatus.OK, {
     isAuthenticated: true,
   });
+};
+
+const isAuthHeaderValid = (authHeader: string): boolean => {
+  return authHeader.startsWith(BEARER);
 };

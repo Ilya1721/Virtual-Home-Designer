@@ -6,7 +6,7 @@ import Scene from "./views/Scene";
 
 export const GlobalContext = React.createContext<GlobalContextType>(null);
 
-function Main() {
+const Main = () => {
   const [scene, setScene] = React.useState<GlobalContextType["scene"]>(null);
 
   const sceneInjection = React.useCallback((canvas: HTMLCanvasElement) => {

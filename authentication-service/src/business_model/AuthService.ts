@@ -1,12 +1,10 @@
 import {
   CreateUserDTO,
-  SignUpDTO,
-  SignInDTO,
   ReadUserDTO,
   AuthTokenPayload,
   UserRole,
 } from "shared-types";
-import { AbstractAuth } from "./abstract/auth";
+import { AbstractAuth, SignInDTO, SignUpDTO } from "./abstract/auth";
 import { AbstractDatabase } from "../database/abstract/database";
 import {
   authenticateUser,
@@ -80,7 +78,7 @@ export class AuthService {
     await this.database.setRefreshToken(user.id, refreshToken);
 
     return {
-      ...toReadUserDTO(user),
+      user: toReadUserDTO(user),
       accessToken: accessToken,
       refreshToken: refreshToken,
     };
