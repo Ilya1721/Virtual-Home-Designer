@@ -10,7 +10,6 @@ import { UserService } from "../business_model/UserService";
 import { DatabaseMock } from "./mocks/DatabaseMock";
 import { BusinessError } from "../business_model/concrete/error";
 import { SafePasswordHandlerMock } from "./mocks/SafePasswordHandlerMock";
-import { mock } from "node:test";
 
 const database = new DatabaseMock();
 const safePasswordHandler = new SafePasswordHandlerMock();

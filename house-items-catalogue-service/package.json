@@ -1,0 +1,35 @@
+{
+  "name": "house-items-catalogue-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/client_api/index.ts",
+    "test": "jest",
+    "migrate-up": "npx tsc && npx migrate-mongo up",
+    "migrate-down": "npx tsc && npx migrate-mongo down",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.16.0",
+    "shared-types": "file:../shared-types",
+    "shared-utils": "file:../shared-utils"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.0.4",
+    "@typescript-eslint/eslint-plugin": "^8.35.0",
+    "@typescript-eslint/parser": "^8.35.0",
+    "eslint": "^9.29.0",
+    "jest": "^30.0.3",
+    "ts-jest": "^29.4.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
+  }
+}

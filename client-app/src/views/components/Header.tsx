@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import React from "react";
+import { AuthService } from "../../business_logic/concrete/auth";
 import { GlobalContext } from "../../Main";
 
 const buttonStyle = {
@@ -18,7 +19,7 @@ const buttonStyle = {
 interface HeaderProps {
   onSignUp?: () => void;
   onSignIn?: () => void;
-  authService: import("../../business_logic/concrete/auth").AuthService;
+  authService: AuthService;
 }
 
 const Header: React.FC<HeaderProps> = ({ onSignUp, onSignIn, authService }) => {
