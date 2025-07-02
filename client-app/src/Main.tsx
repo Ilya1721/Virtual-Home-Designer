@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { AuthService } from "./business_logic/concrete/auth";
+import { setUpAxiosResponseInterceptor } from "./business_logic/concrete/AxiosInterceptors";
 import { BabylonScene } from "./frontend_components/concrete/Babylon/components/Scene";
 import { SCENE_OPTIONS } from "./frontend_components/concrete/Babylon/components/SceneOptions";
 import { GlobalContext as GlobalContextType } from "./views/abstract/globalContext";
@@ -41,6 +42,10 @@ const Main = () => {
   const handleCloseSignUp = () => setSignUpOpen(false);
   const handleOpenSignIn = () => setSignInOpen(true);
   const handleCloseSignIn = () => setSignInOpen(false);
+
+  useEffect(() => {
+    setUpAxiosResponseInterceptor(authService, user?.id);
+  }, [authService, user]);
 
   return (
     <GlobalContext.Provider value={globalContextValue}>

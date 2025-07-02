@@ -5,7 +5,8 @@ export enum HttpStatus {
   UNAUTHORIZED = 401,
   FORBIDDEN = 403,
   NOT_FOUND = 404,
-  CONFLICT = 409
+  CONFLICT = 409,
+  LOGIN_TIMEOUT = 440,
 }
 
 export const DB_URI_NOT_DEFINED = "Database URI is not defined";
