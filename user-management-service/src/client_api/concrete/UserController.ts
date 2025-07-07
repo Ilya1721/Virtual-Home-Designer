@@ -5,11 +5,11 @@ import {
   CreateUserDTO,
   EditUserDTO,
   ReadUserDTO,
+  HttpStatus,
 } from "shared-types";
 import { getHttpStatusByError } from "../../business_model/concrete/error";
 import { UserService } from "../../business_model/UserService";
 import { USER_DELETED_SUCCESSFULLY } from "./constants";
-import { HttpStatus } from "shared-utils";
 
 export class UserController {
   constructor(private userService: UserService) {}

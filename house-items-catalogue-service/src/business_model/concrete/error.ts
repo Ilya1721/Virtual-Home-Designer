@@ -1,4 +1,4 @@
-import { HttpStatus } from "shared-utils";
+import { HttpStatus } from "shared-types";
 
 export enum BusinessError {
   PROBLEM_WITH_DATABASE = "Problem with database"

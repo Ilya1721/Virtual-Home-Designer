@@ -5,8 +5,8 @@ import {
   CreateUserDTO,
   IsAuthenticatedReqDTO,
   ReadUserDTO,
+  HttpStatus,
 } from "shared-types";
-import { HttpStatus } from "shared-utils";
 import { AuthService } from "../../business_model/AuthService";
 import { getHttpStatusByError } from "../../business_model/concrete/error";
 import { SIGNED_OUT_SUCCESSFULY } from "../constants";

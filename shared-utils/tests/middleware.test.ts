@@ -1,5 +1,5 @@
-import { AbstractRequest, AbstractResponse } from "shared-types";
-import { HttpStatus, USER_NOT_AUTHORIZED } from "../src/constants";
+import { AbstractRequest, AbstractResponse, HttpStatus } from "shared-types";
+import { USER_NOT_AUTHORIZED } from "../src/constants";
 import { requireAuthentication } from "../src/middleware";
 import * as AuthService from "../src/services_communication/auth";
 

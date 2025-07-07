@@ -3,9 +3,9 @@ import {
   AbstractResponse,
   HouseItemDTO,
   HouseItemGroup,
+  HttpStatus,
 } from "shared-types";
 import { CatalogueService } from "../../business_model/CatalogueService";
-import { HttpStatus } from "shared-utils";
 import { getHttpStatusByError } from "../../business_model/concrete/error";
 
 export class CatalogueController {

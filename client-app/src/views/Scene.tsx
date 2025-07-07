@@ -20,7 +20,7 @@ const Scene = () => {
     startup();
     return () => {
       dispose();
-    }
+    };
   }, [dispose, sceneInjection, startup]);
 
   return <canvas ref={canvasRef} className="scene" />;

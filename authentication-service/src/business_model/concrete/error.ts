@@ -1,4 +1,4 @@
-import { HttpStatus } from "shared-utils";
+import { HttpStatus } from "shared-types";
 
 export enum BusinessError {
   INVALID_REFRESH_TOKEN = "Invalid refresh token",

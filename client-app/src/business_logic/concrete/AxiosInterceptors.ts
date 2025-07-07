@@ -1,5 +1,5 @@
 import axios from "axios";
-import { HttpStatus } from "shared-utils";
+import { HttpStatus } from "shared-types";
 import { AuthService } from "./auth";
 
 export const setUpAxiosResponseInterceptor = (
