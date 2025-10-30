@@ -73,8 +73,9 @@ const SignInForm: React.FC<SignInFormProps> = ({ open, onClose, onSuccess, authS
       setForm(initialForm);
       if (onSuccess) onSuccess();
       onClose();
-    } catch (err: any) {
-      setError(err?.message || "Sign in failed");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg || "Sign in failed");
     } finally {
       setLoading(false);
     }

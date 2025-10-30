@@ -5,6 +5,7 @@ import { BabylonScene } from "./frontend_components/concrete/Babylon/components/
 import { SCENE_OPTIONS } from "./frontend_components/concrete/Babylon/components/SceneOptions";
 import { GlobalContext as GlobalContextType } from "./views/abstract/globalContext";
 import Header from "./views/components/Header";
+import ModeSelector from "./views/components/ModeSelector";
 import SignInForm from "./views/components/SignInForm";
 import SignUpForm from "./views/components/SignUpForm";
 import Scene from "./views/Scene";
@@ -55,6 +56,7 @@ const Main = () => {
         authService={authService}
       />
       <Scene />
+      <ModeSelector />
       <SignUpForm
         open={signUpOpen}
         onClose={handleCloseSignUp}
