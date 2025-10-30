@@ -1,6 +1,7 @@
 .scene {
   width: 100%;
-  height: calc(100% - 64px);
+  height: 100%;
+  display: block;
   &:focus {
     outline: none;
   }

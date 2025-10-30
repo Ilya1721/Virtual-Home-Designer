@@ -44,8 +44,8 @@ const Header: React.FC<HeaderProps> = ({ onSignUp, onSignIn, authService }) => {
 
   return (
     <AppBar
-      position="static"
-      sx={{ backgroundColor: "#f5f5f5", color: "#333", boxShadow: "none" }}
+      position="absolute"
+      sx={{ backgroundColor: "rgba(0, 0, 0, 0)", color: "#333", boxShadow: "none" }}
     >
       <Toolbar>
         <Typography variant="h6" sx={{ flexGrow: 1, color: "#333" }}>

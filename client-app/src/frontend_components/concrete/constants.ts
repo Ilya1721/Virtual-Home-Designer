@@ -1,0 +1,1 @@
+export const BACKGROUND_TEXTURE_SIZE = 512;

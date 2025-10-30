@@ -1,5 +1,6 @@
 import * as BABYLON from "@babylonjs/core";
 import { AbstractScene, SceneOptions } from "../../../abstract/AbstractScene";
+import { BACKGROUND_TEXTURE_SIZE } from "../../constants";
 import {
   NO_RECURSE_DISPOSE_CAMERA,
   DISPOSE_CAMERA_MAT_AND_TEXTURES,
@@ -42,6 +43,36 @@ export class BabylonScene implements AbstractScene {
     this.engine.resize();
   }
 
+  private addGradientBackground(): void {
+    const gradientTexture = new BABYLON.DynamicTexture(
+      "backgroundGradient",
+      { width: BACKGROUND_TEXTURE_SIZE, height: BACKGROUND_TEXTURE_SIZE },
+      this.scene,
+      false
+    );
+
+    const textureContext = gradientTexture.getContext();
+    const gradientFill = textureContext.createLinearGradient(
+      0,
+      0,
+      0,
+      BACKGROUND_TEXTURE_SIZE
+    );
+    gradientFill.addColorStop(0, "#3498db");
+    gradientFill.addColorStop(1, "#ecf0f1");
+    textureContext.fillStyle = gradientFill;
+    textureContext.fillRect(
+      0,
+      0,
+      BACKGROUND_TEXTURE_SIZE,
+      BACKGROUND_TEXTURE_SIZE
+    );
+    gradientTexture.update();
+
+    const layer = new BABYLON.Layer("gradientTexture", null, this.scene, true);
+    layer.texture = gradientTexture;
+  }
+
   private init(): void {
     this.engine = new BABYLON.Engine(
       this.canvas,
@@ -56,5 +87,6 @@ export class BabylonScene implements AbstractScene {
       this.canvas,
       this.sceneOptions.cameraOptions.attachControlNoPreventDefault
     );
+    this.addGradientBackground();
   }
 }
