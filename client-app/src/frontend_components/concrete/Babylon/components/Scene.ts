@@ -1,4 +1,5 @@
 import * as BABYLON from "@babylonjs/core";
+import { GridMaterial } from "@babylonjs/materials/grid";
 import { AbstractScene, SceneOptions } from "../../../abstract/AbstractScene";
 import { BACKGROUND_TEXTURE_SIZE } from "../../constants";
 import {
@@ -73,6 +74,28 @@ export class BabylonScene implements AbstractScene {
     layer.texture = gradientTexture;
   }
 
+  private addGridPlane(): void {
+    const ground = BABYLON.MeshBuilder.CreateGround(
+      "ground",
+      {
+        width: 50,
+        height: 50,
+      },
+      this.scene
+    );
+
+    const gridMaterial = new GridMaterial("gridMaterial", this.scene);
+    gridMaterial.majorUnitFrequency = 5;
+    gridMaterial.minorUnitVisibility = 0.45;
+    gridMaterial.gridRatio = 1;
+    gridMaterial.backFaceCulling = false;
+    gridMaterial.mainColor = new BABYLON.Color3(1, 1, 1);
+    gridMaterial.lineColor = new BABYLON.Color3(0.6, 0.6, 0.6);
+    gridMaterial.opacity = 1.0;
+
+    ground.material = gridMaterial;
+  }
+
   private init(): void {
     this.engine = new BABYLON.Engine(
       this.canvas,
@@ -88,5 +111,6 @@ export class BabylonScene implements AbstractScene {
       this.sceneOptions.cameraOptions.attachControlNoPreventDefault
     );
     this.addGradientBackground();
+    this.addGridPlane();
   }
 }

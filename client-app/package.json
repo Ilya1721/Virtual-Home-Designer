@@ -6,6 +6,7 @@
     "@babylonjs/core": "^7.36.0",
     "@babylonjs/gui": "^7.36.0",
     "@babylonjs/loaders": "^7.36.0",
+    "@babylonjs/materials": "^7.36.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^7.0.1",
