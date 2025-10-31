@@ -1,6 +1,7 @@
 export interface AbstractScene {
   render: () => void;
   dispose: () => void;
+  addOnMouseEventCallback: (event: unknown) => void;
 }
 
 interface CameraOptions {

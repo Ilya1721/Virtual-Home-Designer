@@ -55,7 +55,7 @@ const activeModeSx: React.CSSProperties = {
 const ModeSelector: React.FC = () => {
   const [active, setActive] = useState<Mode>("construction");
 
-  const makeStyles = (mode: Mode) => {
+  const makeStylesForBtn = (mode: Mode) => {
     const isActive = active === mode;
     return {
       backgroundColor: isActive ? "#cfcfcf" : "#ececec",
@@ -68,7 +68,7 @@ const ModeSelector: React.FC = () => {
       <Box sx={containerSx}>
         <ButtonBase
           onClick={() => setActive("construction")}
-          sx={{ ...buttonBaseSx, ...makeStyles("construction") }}
+          sx={{ ...buttonBaseSx, ...makeStylesForBtn("construction") }}
         >
           <img
             src="/icons/construction.png"
@@ -79,7 +79,11 @@ const ModeSelector: React.FC = () => {
         </ButtonBase>
         <ButtonBase
           onClick={() => setActive("furniture")}
-          sx={{ ...buttonBaseSx, ...makeStyles("furniture"), marginBottom: 0 }}
+          sx={{
+            ...buttonBaseSx,
+            ...makeStylesForBtn("furniture"),
+            marginBottom: 0,
+          }}
         >
           <img src="/icons/furniture.png" alt="furniture" style={imageSx} />
           <Typography sx={buttonTextSx}>Furniture</Typography>

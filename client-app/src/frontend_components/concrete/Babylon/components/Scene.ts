@@ -40,6 +40,12 @@ export class BabylonScene implements AbstractScene {
     });
   }
 
+  public addOnMouseEventCallback(event: unknown): void {
+    this.scene.onPointerObservable.add(
+      event as (pointerInfo: BABYLON.PointerInfo) => void
+    );
+  }
+
   private onWindowResize(): void {
     this.engine.resize();
   }
@@ -96,6 +102,10 @@ export class BabylonScene implements AbstractScene {
     ground.material = gridMaterial;
   }
 
+  private moveCameraUp(): void {
+    this.camera.position = new BABYLON.Vector3(0, 20, 0);
+  }
+
   private init(): void {
     this.engine = new BABYLON.Engine(
       this.canvas,
@@ -110,6 +120,7 @@ export class BabylonScene implements AbstractScene {
       this.canvas,
       this.sceneOptions.cameraOptions.attachControlNoPreventDefault
     );
+    this.moveCameraUp();
     this.addGradientBackground();
     this.addGridPlane();
   }

@@ -88,8 +88,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
       setForm(initialForm);
       if (onSuccess) onSuccess();
       onClose();
-    } catch (err: any) {
-      setError(err?.message || "Registration failed");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg || "Registration failed");
     } finally {
       setLoading(false);
     }
