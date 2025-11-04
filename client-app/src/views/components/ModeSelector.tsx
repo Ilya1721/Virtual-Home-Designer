@@ -5,8 +5,6 @@ import React, { useState } from "react";
 import ConstructionMode from "./ConstructionMode";
 import FurnitureMode from "./FurnitureMode";
 
-type Mode = "construction" | "furniture";
-
 const containerSx = {
   backgroundColor: "#ececec",
   padding: 1,
@@ -52,7 +50,13 @@ const activeModeSx: React.CSSProperties = {
   boxShadow: "0 2px 6px rgba(0,0,0,0.12)",
 };
 
-const ModeSelector: React.FC = () => {
+type Mode = "construction" | "furniture";
+
+interface ModeSelectorProps {
+  changeCursor: (url: string | null) => void;
+}
+
+const ModeSelector: React.FC<ModeSelectorProps> = ({ changeCursor }) => {
   const [active, setActive] = useState<Mode>("construction");
 
   const makeStylesForBtn = (mode: Mode) => {
@@ -90,7 +94,9 @@ const ModeSelector: React.FC = () => {
         </ButtonBase>
       </Box>
       <Box sx={activeModeSx}>
-        {active === "construction" && <ConstructionMode />}
+        {active === "construction" && (
+          <ConstructionMode changeCursor={changeCursor} />
+        )}
         {active === "furniture" && <FurnitureMode />}
       </Box>
     </>

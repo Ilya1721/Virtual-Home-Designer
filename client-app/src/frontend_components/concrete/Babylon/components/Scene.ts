@@ -13,6 +13,7 @@ export class BabylonScene implements AbstractScene {
   private engine: BABYLON.Engine;
   private scene: BABYLON.Scene;
   private camera: BABYLON.TargetCamera;
+  private isDisposed = false;
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -22,9 +23,11 @@ export class BabylonScene implements AbstractScene {
   }
 
   public render(): void {
-    this.engine.runRenderLoop(() => {
-      this.scene.render();
-    });
+    if (!this.isDisposed) {
+      this.engine.runRenderLoop(() => {
+        this.scene.render();
+      });
+    }
   }
 
   public dispose(): void {
@@ -38,6 +41,7 @@ export class BabylonScene implements AbstractScene {
     window.removeEventListener("resize", () => {
       this.engine.resize();
     });
+    this.isDisposed = true;
   }
 
   public addOnMouseEventCallback(event: unknown): void {

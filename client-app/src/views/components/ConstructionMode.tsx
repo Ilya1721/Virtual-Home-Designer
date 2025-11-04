@@ -43,7 +43,13 @@ const modeNameSx: React.CSSProperties = {
 
 type Mode = "wall" | "window" | "door" | "none";
 
-const ConstructionMode: React.FC = () => {
+interface ConstructionModeProps {
+  changeCursor: (url: string | null) => void;
+}
+
+const ConstructionMode: React.FC<ConstructionModeProps> = ({
+  changeCursor,
+}) => {
   const [activeMode, setActiveMode] = React.useState<Mode>("none");
   const { scene } = React.useContext(GlobalContext);
   const constructionModeSelector = React.useMemo(() => {
@@ -56,8 +62,9 @@ const ConstructionMode: React.FC = () => {
   useEffect(() => {
     return () => {
       constructionModeSelector?.setMode(null);
+      changeCursor(null);
     };
-  }, [constructionModeSelector]);
+  }, [changeCursor, constructionModeSelector]);
 
   const makeStylesForBtn = (mode: Mode) => {
     const isActive = activeMode === mode;
@@ -71,8 +78,10 @@ const ConstructionMode: React.FC = () => {
     if (mode == activeMode) {
       setActiveMode("none");
       constructionModeSelector?.setMode(null);
+      changeCursor(null);
     } else {
       setActiveMode(mode);
+      changeCursor("/icons/selection_cursor.png");
       switch (mode) {
         case "wall":
           constructionModeSelector?.setMode(wallMode.current);

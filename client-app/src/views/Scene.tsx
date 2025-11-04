@@ -1,29 +1,31 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import React from "react";
 import { GlobalContext } from "../Main";
 
-const Scene = () => {
+interface SceneProps {
+  cursorUrl: string | null;
+}
+
+const Scene: React.FC<SceneProps> = ({ cursorUrl }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const { scene, sceneInjection } = React.useContext(GlobalContext);
-
-  const dispose = useCallback(() => {
-    scene?.dispose();
-  }, [scene]);
-
-  const startup = useCallback(() => {
-    scene?.render();
-  }, [scene]);
+  const { scene, sceneInjection, sceneDisposal } =
+    React.useContext(GlobalContext);
+  const getCursorClass = () => {
+    return cursorUrl ? "selection-cursor" : "s";
+  };
 
   useEffect(() => {
-    if (!canvasRef.current) return;
-    sceneInjection(canvasRef.current);
-    startup();
+    if (!scene) {
+      sceneInjection(canvasRef.current);
+    } else {
+      scene.render();
+    }
     return () => {
-      dispose();
+      sceneDisposal();
     };
-  }, [dispose, sceneInjection, startup]);
+  }, [scene, sceneDisposal, sceneInjection]);
 
-  return <canvas ref={canvasRef} className="scene" />;
+  return <canvas ref={canvasRef} className={`scene ${getCursorClass()}`} />;
 };
 
 export default Scene;

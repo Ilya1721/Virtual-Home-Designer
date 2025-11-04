@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { AuthService } from "./business_logic/concrete/auth";
 import { setUpAxiosResponseInterceptor } from "./business_logic/concrete/AxiosInterceptors";
 import { BabylonScene } from "./frontend_components/concrete/Babylon/components/Scene";
@@ -17,27 +17,40 @@ const Main = () => {
   const [user, setUser] = React.useState<GlobalContextType["user"]>(null);
   const [signUpOpen, setSignUpOpen] = React.useState(false);
   const [signInOpen, setSignInOpen] = React.useState(false);
+  const [cursorUrl, setCursorUrl] = React.useState<string | null>(null);
 
   const authService = React.useMemo(() => new AuthService(setUser), [setUser]);
 
   const sceneInjection = React.useCallback(
-    (canvas: HTMLCanvasElement) => {
-      if (!scene) {
+    (canvas: HTMLCanvasElement | null) => {
+      if (canvas) {
         setScene(new BabylonScene(canvas, SCENE_OPTIONS));
       }
     },
-    [scene]
+    []
   );
+
+  const sceneDisposal = useCallback(() => {
+    if (scene) {
+      scene.dispose();
+      setScene(null);
+    }
+  }, [scene]);
 
   const globalContextValue = React.useMemo<GlobalContextType>(
     () => ({
       scene,
       sceneInjection,
+      sceneDisposal,
       user,
       setUser,
     }),
-    [scene, user, sceneInjection]
+    [scene, sceneDisposal, sceneInjection, user]
   );
+
+  const changeCursor = useCallback((url: string | null) => {
+    setCursorUrl(url);
+  }, []);
 
   const handleOpenSignUp = () => setSignUpOpen(true);
   const handleCloseSignUp = () => setSignUpOpen(false);
@@ -55,8 +68,8 @@ const Main = () => {
         onSignIn={handleOpenSignIn}
         authService={authService}
       />
-      <Scene />
-      <ModeSelector />
+      <Scene cursorUrl={cursorUrl} />
+      <ModeSelector changeCursor={changeCursor} />
       <SignUpForm
         open={signUpOpen}
         onClose={handleCloseSignUp}

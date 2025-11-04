@@ -7,6 +7,10 @@
   outline: none;
 }
 
+.selection-cursor {
+  cursor: url("./icons/selection_cursor.png"), auto;
+}
+
 html, body, #root {
   width: 100%;
   height: 100%;

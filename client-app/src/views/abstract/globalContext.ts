@@ -6,4 +6,5 @@ export interface GlobalContext {
   user: ReadUserDTO | null;
   setUser: (user: ReadUserDTO | null) => void;
   sceneInjection: (canvas: HTMLElement) => void;
+  sceneDisposal: () => void;
 }
