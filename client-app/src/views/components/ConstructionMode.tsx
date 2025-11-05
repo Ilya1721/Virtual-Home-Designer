@@ -57,7 +57,13 @@ const ConstructionMode: React.FC<ConstructionModeProps> = ({
       return new ConstructionModeSelector(scene);
     }
   }, [scene]);
-  const wallMode = React.useRef(new WallMode());
+  const wallMode = React.useRef(null);
+
+  useEffect(() => {
+    if (scene) {
+      wallMode.current = new WallMode(scene);
+    }
+  }, [scene]);
 
   useEffect(() => {
     return () => {

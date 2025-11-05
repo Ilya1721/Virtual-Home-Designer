@@ -1,4 +1,4 @@
 export interface AbstractConstructionMode {
-  onClick(): void;
-  onMouseMove(): void;
+  onClick(pointerInfo: unknown): void;
+  onMouseMove(pointerInfo: unknown): void;
 }

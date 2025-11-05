@@ -17,10 +17,10 @@ export class ConstructionModeSelector {
     this.scene?.addOnMouseEventCallback((pointerInfo: BABYLON.PointerInfo) => {
       switch (pointerInfo.type) {
         case BABYLON.PointerEventTypes.POINTERPICK:
-          this.currentMode?.onClick();
+          this.currentMode?.onClick(pointerInfo);
           break;
         case BABYLON.PointerEventTypes.POINTERMOVE:
-          this.currentMode?.onMouseMove();
+          this.currentMode?.onMouseMove(pointerInfo);
           break;
       }
     });

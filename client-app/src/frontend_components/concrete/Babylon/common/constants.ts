@@ -7,3 +7,6 @@ export const ARC_ROTATE_CAMERA_TARGET = BABYLON.Vector3.Zero();
 
 export const NO_RECURSE_DISPOSE_CAMERA = false;
 export const DISPOSE_CAMERA_MAT_AND_TEXTURES = true;
+
+export const WALL_HEIGHT = 3.0;
+export const WALL_THICKNESS = 0.4;

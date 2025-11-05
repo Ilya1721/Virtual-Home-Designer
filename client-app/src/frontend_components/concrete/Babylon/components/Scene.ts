@@ -13,6 +13,7 @@ export class BabylonScene implements AbstractScene {
   private engine: BABYLON.Engine;
   private scene: BABYLON.Scene;
   private camera: BABYLON.TargetCamera;
+  private groundMesh: BABYLON.GroundMesh;
   private isDisposed = false;
 
   constructor(
@@ -20,6 +21,14 @@ export class BabylonScene implements AbstractScene {
     private sceneOptions: SceneOptions
   ) {
     this.init();
+  }
+
+  public getGroundMesh(): BABYLON.Mesh {
+    return this.groundMesh;
+  }
+
+  public getUnderlyingScene(): BABYLON.Scene {
+    return this.scene;
   }
 
   public render(): void {
@@ -84,8 +93,8 @@ export class BabylonScene implements AbstractScene {
     layer.texture = gradientTexture;
   }
 
-  private addGridPlane(): void {
-    const ground = BABYLON.MeshBuilder.CreateGround(
+  private addGround(): void {
+    this.groundMesh = BABYLON.MeshBuilder.CreateGround(
       "ground",
       {
         width: 50,
@@ -103,7 +112,7 @@ export class BabylonScene implements AbstractScene {
     gridMaterial.lineColor = new BABYLON.Color3(0.6, 0.6, 0.6);
     gridMaterial.opacity = 1.0;
 
-    ground.material = gridMaterial;
+    this.groundMesh.material = gridMaterial;
   }
 
   private moveCameraUp(): void {
@@ -126,6 +135,6 @@ export class BabylonScene implements AbstractScene {
     );
     this.moveCameraUp();
     this.addGradientBackground();
-    this.addGridPlane();
+    this.addGround();
   }
 }
