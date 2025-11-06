@@ -11,6 +11,8 @@ export class WallMode implements AbstractConstructionMode {
   private startPoint: BABYLON.Vector3 | null = null;
   private lineOrthoVec: BABYLON.Vector3 | null = null;
   private ribbon: BABYLON.Mesh = null;
+  private startSideLine: BABYLON.LinesMesh = null;
+  private endSideLine: BABYLON.LinesMesh = null;
   private measurementLine: BABYLON.LinesMesh = null;
   private scene: BABYLON.Scene;
   private babylonScene: BabylonScene;
@@ -56,6 +58,7 @@ export class WallMode implements AbstractConstructionMode {
   private onEndClick(pointerInfo: BABYLON.PointerInfo): void {
     this.removeRibbon();
     this.removeLine();
+    this.removeSideLines();
     this.startPoint = null;
   }
 
@@ -65,6 +68,14 @@ export class WallMode implements AbstractConstructionMode {
     const newEndPoint = endPoint.add(orthoVec);
 
     return [newStartPoint, newEndPoint];
+  }
+
+  private getSideLinePoints(point: BABYLON.Vector3): BABYLON.Vector3[] {
+    const orthoVec = this.lineOrthoVec.scale(WALL_THICKNESS * 0.4);
+    const sideStartPoint = point.add(orthoVec);
+    const sideEndPoint = point.subtract(orthoVec);
+
+    return [sideStartPoint, sideEndPoint];
   }
 
   private getRibbonPathArray(endPoint: BABYLON.Vector3): BABYLON.Vector3[][] {
@@ -106,6 +117,48 @@ export class WallMode implements AbstractConstructionMode {
       this.scene
     );
     this.measurementLine.material = this.lineMaterial;
+  }
+
+  private createSideLine(
+    points: BABYLON.Vector3[],
+    name: string
+  ): BABYLON.LinesMesh {
+    const sideLine = BABYLON.MeshBuilder.CreateLines(
+      name,
+      { points, updatable: true },
+      this.scene
+    );
+    sideLine.material = this.lineMaterial;
+
+    return sideLine;
+  }
+
+  private createStartSideLine(point: BABYLON.Vector3): void {
+    const points = this.getSideLinePoints(point);
+    this.startSideLine = this.createSideLine(points, "startSideLine");
+  }
+
+  private createEndSideLine(point: BABYLON.Vector3): void {
+    const points = this.getSideLinePoints(point);
+    this.endSideLine = this.createSideLine(points, "endSideLine");
+  }
+
+  private updateStartSideLine(point: BABYLON.Vector3): void {
+    const points = this.getSideLinePoints(point);
+    BABYLON.MeshBuilder.CreateLines(
+      null,
+      { points, instance: this.startSideLine },
+      this.scene
+    );
+  }
+
+  private updateEndSideLine(point: BABYLON.Vector3): void {
+    const points = this.getSideLinePoints(point);
+    BABYLON.MeshBuilder.CreateLines(
+      null,
+      { points, instance: this.endSideLine },
+      this.scene
+    );
   }
 
   private updateLine(points: BABYLON.Vector3[]): void {
@@ -151,6 +204,15 @@ export class WallMode implements AbstractConstructionMode {
     this.measurementLine = null;
   }
 
+  private removeSideLines(): void {
+    this.scene.removeMesh(this.startSideLine);
+    this.startSideLine.dispose();
+    this.startSideLine = null;
+    this.scene.removeMesh(this.endSideLine);
+    this.endSideLine.dispose();
+    this.endSideLine = null;
+  }
+
   private getGroundMeshPickedPoint(
     pointerInfo: BABYLON.PointerInfo
   ): BABYLON.Vector3 | null {
@@ -188,9 +250,13 @@ export class WallMode implements AbstractConstructionMode {
     if (!this.ribbon) {
       this.createRibbon(ribbonPathArray);
       this.createLine(linePoints);
+      this.createStartSideLine(linePoints[0]);
+      this.createEndSideLine(linePoints[1]);
     } else {
       this.updateRibbon(ribbonPathArray);
       this.updateLine(linePoints);
+      this.updateStartSideLine(linePoints[0]);
+      this.updateEndSideLine(linePoints[1]);
     }
   }
 }
