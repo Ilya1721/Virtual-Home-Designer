@@ -1,4 +1,5 @@
 import * as BABYLON from "@babylonjs/core";
+import * as BABYLON_GUI from "@babylonjs/gui";
 import { BabylonScene } from "./Scene";
 import { AbstractConstructionMode } from "../../../abstract/AbstractConstructionMode";
 import { AbstractScene } from "../../../abstract/AbstractScene";
@@ -14,6 +15,10 @@ export class WallMode implements AbstractConstructionMode {
   private startSideLine: BABYLON.LinesMesh = null;
   private endSideLine: BABYLON.LinesMesh = null;
   private measurementLine: BABYLON.LinesMesh = null;
+  private textPlaceholder: BABYLON.Mesh = null;
+  private textRectangle: BABYLON_GUI.AdvancedDynamicTexture = null;
+  private labelRect: BABYLON_GUI.Rectangle = null;
+  private textBlock: BABYLON_GUI.TextBlock = null;
   private scene: BABYLON.Scene;
   private babylonScene: BabylonScene;
 
@@ -21,6 +26,48 @@ export class WallMode implements AbstractConstructionMode {
     this.babylonScene = scene as BabylonScene;
     this.scene = this.babylonScene.getUnderlyingScene();
     this.prepareMaterials();
+    this.prepareUI();
+  }
+
+  private prepareUI(): void {
+    this.prepareTextPlaceholder();
+    this.prepareTextRectangle();
+  }
+
+  private prepareTextPlaceholder(): void {
+    this.textPlaceholder = BABYLON.MeshBuilder.CreateBox(
+      "textPlaceholder",
+      { size: 0.01 },
+      this.scene
+    );
+    this.textPlaceholder.isVisible = false;
+  }
+
+  private prepareTextRectangle(): void {
+    this.textRectangle =
+      BABYLON_GUI.AdvancedDynamicTexture.CreateFullscreenUI("WallLengthUI");
+
+    this.labelRect = new BABYLON_GUI.Rectangle();
+    this.labelRect.isVisible = false;
+    this.labelRect.background = "white";
+    this.labelRect.color = "blue";
+    this.labelRect.thickness = 1;
+    this.labelRect.cornerRadius = 8;
+    this.labelRect.width = "36px";
+    this.labelRect.height = "25px";
+
+    this.textBlock = new BABYLON_GUI.TextBlock();
+    this.textBlock.text = "0.0 m";
+    this.textBlock.color = "black";
+    this.textBlock.fontSize = 10;
+
+    this.labelRect.addControl(this.textBlock);
+    this.textRectangle.addControl(this.labelRect);
+    this.labelRect.linkWithMesh(this.textPlaceholder);
+  }
+
+  private moveTextPlaceholderToLineMidpoint(points: BABYLON.Vector3[]): void {
+    this.textPlaceholder.position = points[0].add(points[1]).scale(0.5);
   }
 
   private makeMaterialOverlay(material: BABYLON.StandardMaterial): void {
@@ -51,6 +98,14 @@ export class WallMode implements AbstractConstructionMode {
     this.makeMaterialOverlay(this.lineMaterial);
   }
 
+  private enableUI(): void {
+    this.labelRect.isVisible = true;
+  }
+
+  private disableUI(): void {
+    this.labelRect.isVisible = false;
+  }
+
   private onStartClick(pointerInfo: BABYLON.PointerInfo): void {
     this.startPoint = pointerInfo.pickInfo.pickedPoint;
   }
@@ -59,6 +114,7 @@ export class WallMode implements AbstractConstructionMode {
     this.removeRibbon();
     this.removeLine();
     this.removeSideLines();
+    this.disableUI();
     this.startPoint = null;
   }
 
@@ -229,6 +285,10 @@ export class WallMode implements AbstractConstructionMode {
     return pickedObject.pickedPoint;
   }
 
+  private updateMeasurementLabel(distance: number): void {
+    this.textBlock.text = `${distance.toFixed(2)} m`;
+  }
+
   public onClick(pointerInfo: BABYLON.PointerInfo): void {
     if (!this.startPoint) {
       this.onStartClick(pointerInfo);
@@ -246,12 +306,16 @@ export class WallMode implements AbstractConstructionMode {
     const endPoint = this.getRibbonEndPoint(groundMeshPickedPoint);
     const ribbonPathArray = this.getRibbonPathArray(endPoint);
     const linePoints = this.getLinePoints(endPoint);
+    this.moveTextPlaceholderToLineMidpoint(linePoints);
+    const wallLength = BABYLON.Vector3.Distance(this.startPoint, endPoint);
+    this.updateMeasurementLabel(wallLength);
 
     if (!this.ribbon) {
       this.createRibbon(ribbonPathArray);
       this.createLine(linePoints);
       this.createStartSideLine(linePoints[0]);
       this.createEndSideLine(linePoints[1]);
+      this.enableUI();
     } else {
       this.updateRibbon(ribbonPathArray);
       this.updateLine(linePoints);
