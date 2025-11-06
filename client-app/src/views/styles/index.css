@@ -8,7 +8,7 @@
 }
 
 .selection-cursor {
-  cursor: url("./icons/selection_cursor.png"), auto;
+  cursor: url("./icons/selection_cursor.png") 12 12, auto;
 }
 
 html, body, #root {

@@ -11,7 +11,7 @@ const Scene: React.FC<SceneProps> = ({ cursorUrl }) => {
   const { scene, sceneInjection, sceneDisposal } =
     React.useContext(GlobalContext);
   const getCursorClass = () => {
-    return cursorUrl ? "selection-cursor" : "s";
+    return cursorUrl ? "selection-cursor" : "";
   };
 
   useEffect(() => {

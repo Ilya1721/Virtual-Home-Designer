@@ -31,6 +31,8 @@ export class WallMode implements AbstractConstructionMode {
     );
     this.ribbonMaterial.emissiveColor = BABYLON.Color3.Blue();
     this.ribbonMaterial.alpha = 0.5;
+    this.ribbonMaterial.depthFunction = BABYLON.Constants.ALWAYS;
+    this.ribbonMaterial.disableDepthWrite = true;
   }
 
   private onStartClick(pointerInfo: BABYLON.PointerInfo): void {
