@@ -69,6 +69,7 @@ const ConstructionMode: React.FC<ConstructionModeProps> = ({
     return () => {
       constructionModeSelector?.setMode(null);
       changeCursor(null);
+      wallMode.current?.dispose();
     };
   }, [changeCursor, constructionModeSelector]);
 

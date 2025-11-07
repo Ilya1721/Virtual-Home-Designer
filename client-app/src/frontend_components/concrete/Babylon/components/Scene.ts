@@ -111,7 +111,6 @@ export class BabylonScene implements AbstractScene {
     gridMaterial.mainColor = new BABYLON.Color3(1, 1, 1);
     gridMaterial.lineColor = new BABYLON.Color3(0.6, 0.6, 0.6);
     gridMaterial.opacity = 1.0;
-
     this.groundMesh.material = gridMaterial;
   }
 

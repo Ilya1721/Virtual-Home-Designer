@@ -1,15 +1,17 @@
 import * as BABYLON from "@babylonjs/core";
 import * as BABYLON_GUI from "@babylonjs/gui";
+import earcut from "earcut";
 import { BabylonScene } from "./Scene";
 import { AbstractConstructionMode } from "../../../abstract/AbstractConstructionMode";
 import { AbstractScene } from "../../../abstract/AbstractScene";
-import { WALL_THICKNESS } from "../common/constants";
+import { WALL_HEIGHT, WALL_THICKNESS } from "../common/constants";
 
 export class WallMode implements AbstractConstructionMode {
   private wallMaterial: BABYLON.StandardMaterial;
   private ribbonMaterial: BABYLON.StandardMaterial;
   private lineMaterial: BABYLON.StandardMaterial;
   private startPoint: BABYLON.Vector3 | null = null;
+  private endPoint: BABYLON.Vector3 | null = null;
   private lineOrthoVec: BABYLON.Vector3 | null = null;
   private ribbon: BABYLON.Mesh = null;
   private startSideLine: BABYLON.LinesMesh = null;
@@ -19,6 +21,7 @@ export class WallMode implements AbstractConstructionMode {
   private textRectangle: BABYLON_GUI.AdvancedDynamicTexture = null;
   private labelRect: BABYLON_GUI.Rectangle = null;
   private textBlock: BABYLON_GUI.TextBlock = null;
+  private walls: BABYLON.Mesh[] = [];
   private scene: BABYLON.Scene;
   private babylonScene: BabylonScene;
 
@@ -53,7 +56,7 @@ export class WallMode implements AbstractConstructionMode {
     this.labelRect.color = "blue";
     this.labelRect.thickness = 1;
     this.labelRect.cornerRadius = 8;
-    this.labelRect.width = "36px";
+    this.labelRect.width = "45px";
     this.labelRect.height = "25px";
 
     this.textBlock = new BABYLON_GUI.TextBlock();
@@ -106,22 +109,63 @@ export class WallMode implements AbstractConstructionMode {
     this.labelRect.isVisible = false;
   }
 
+  private disposeWalls(): void {
+    this.walls.forEach((wall) => {
+      wall.dispose();
+    });
+    this.walls = [];
+  }
+
+  private createWallMesh(rectangle: BABYLON.Vector3[]): void {
+    const wall = BABYLON.MeshBuilder.ExtrudePolygon(
+      `wall${this.walls.length + 1}`,
+      {
+        shape: rectangle,
+        depth: WALL_HEIGHT
+      },
+      this.scene,
+      earcut
+    );
+    wall.material = this.wallMaterial;
+    wall.translate(BABYLON.Axis.Y, WALL_HEIGHT);
+    this.walls.push(wall);
+  }
+
+  private buildWall(): void {
+    const wallDir = this.endPoint.subtract(this.startPoint).normalize();
+    const wallOrthoVec = new BABYLON.Vector3(-wallDir.z, 0, wallDir.x);
+    const halfThickness = WALL_THICKNESS * 0.5;
+
+    const p1 = this.startPoint.add(wallOrthoVec.scale(halfThickness));
+    const p2 = this.startPoint.add(wallOrthoVec.scale(-halfThickness));
+    const p3 = this.endPoint.add(wallOrthoVec.scale(-halfThickness));
+    const p4 = this.endPoint.add(wallOrthoVec.scale(halfThickness));
+    this.createWallMesh([p1, p2, p3, p4]);
+  }
+
   private onStartClick(pointerInfo: BABYLON.PointerInfo): void {
     this.startPoint = pointerInfo.pickInfo.pickedPoint;
   }
 
-  private onEndClick(pointerInfo: BABYLON.PointerInfo): void {
-    this.removeRibbon();
-    this.removeLine();
-    this.removeSideLines();
-    this.disableUI();
+  private disposeMeasurementUI(): void {
+    if (this.ribbon) {
+      this.removeRibbon();
+      this.removeLine();
+      this.removeSideLines();
+      this.disableUI();
+    }
+  }
+
+  private onEndClick(): void {
+    this.disposeMeasurementUI();
+    this.buildWall();
     this.startPoint = null;
   }
 
-  private getLinePoints(endPoint: BABYLON.Vector3): BABYLON.Vector3[] {
-    const orthoVec = this.lineOrthoVec.scale(WALL_THICKNESS * 1.75);
+  private getLinePoints(): BABYLON.Vector3[] {
+    const orthoVec = this.lineOrthoVec.scale(WALL_THICKNESS * 2.0);
     const newStartPoint = this.startPoint.add(orthoVec);
-    const newEndPoint = endPoint.add(orthoVec);
+    const newEndPoint = this.endPoint.add(orthoVec);
 
     return [newStartPoint, newEndPoint];
   }
@@ -134,16 +178,16 @@ export class WallMode implements AbstractConstructionMode {
     return [sideStartPoint, sideEndPoint];
   }
 
-  private getRibbonPathArray(endPoint: BABYLON.Vector3): BABYLON.Vector3[][] {
-    const ribbonDir = endPoint.subtract(this.startPoint);
+  private getRibbonPathArray(): BABYLON.Vector3[][] {
+    const ribbonDir = this.endPoint.subtract(this.startPoint);
     const orthoVec = new BABYLON.Vector3(-ribbonDir.z, 0, ribbonDir.x)
       .normalize()
       .scale(WALL_THICKNESS * 0.5);
 
-    const path1 = [this.startPoint.add(orthoVec), endPoint.add(orthoVec)];
+    const path1 = [this.startPoint.add(orthoVec), this.endPoint.add(orthoVec)];
     const path2 = [
       this.startPoint.subtract(orthoVec),
-      endPoint.subtract(orthoVec),
+      this.endPoint.subtract(orthoVec),
     ];
 
     return [path1, path2];
@@ -278,7 +322,7 @@ export class WallMode implements AbstractConstructionMode {
     );
     const groundMeshId = this.babylonScene.getGroundMesh().id;
 
-    if (!pickedObject || pickedObject.pickedMesh.id !== groundMeshId) {
+    if (!pickedObject || pickedObject.pickedMesh?.id !== groundMeshId) {
       return null;
     }
 
@@ -293,7 +337,7 @@ export class WallMode implements AbstractConstructionMode {
     if (!this.startPoint) {
       this.onStartClick(pointerInfo);
     } else {
-      this.onEndClick(pointerInfo);
+      this.onEndClick();
     }
   }
 
@@ -303,11 +347,11 @@ export class WallMode implements AbstractConstructionMode {
       return;
     }
 
-    const endPoint = this.getRibbonEndPoint(groundMeshPickedPoint);
-    const ribbonPathArray = this.getRibbonPathArray(endPoint);
-    const linePoints = this.getLinePoints(endPoint);
+    this.endPoint = this.getRibbonEndPoint(groundMeshPickedPoint);
+    const ribbonPathArray = this.getRibbonPathArray();
+    const linePoints = this.getLinePoints();
     this.moveTextPlaceholderToLineMidpoint(linePoints);
-    const wallLength = BABYLON.Vector3.Distance(this.startPoint, endPoint);
+    const wallLength = BABYLON.Vector3.Distance(this.startPoint, this.endPoint);
     this.updateMeasurementLabel(wallLength);
 
     if (!this.ribbon) {
@@ -322,5 +366,12 @@ export class WallMode implements AbstractConstructionMode {
       this.updateStartSideLine(linePoints[0]);
       this.updateEndSideLine(linePoints[1]);
     }
+  }
+
+  public dispose(): void {
+    this.disposeMeasurementUI();
+    this.textRectangle.dispose();
+    this.textPlaceholder.dispose();
+    this.disposeWalls();
   }
 }
