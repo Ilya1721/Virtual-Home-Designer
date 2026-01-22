@@ -1,0 +1,23 @@
+{
+  "compounds": [
+    {
+      "name": "Debug All Services",
+      "configurations": [
+        "authentication-service Debug",
+        "house-items-catalogue-service Debug",
+        "user-management-service Debug",
+        "client-app Debug"
+      ],
+      "stopAll": true
+    },
+    {
+      "name": "Debug All Tests",
+      "configurations": [
+        "authentication-service Debug Tests",
+        "house-items-catalogue-service Debug Tests",
+        "user-management-service Debug Tests"
+      ],
+      "stopAll": true
+    }
+  ]
+}

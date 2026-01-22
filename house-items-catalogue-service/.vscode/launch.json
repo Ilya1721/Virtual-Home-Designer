@@ -4,7 +4,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug House Items Catalogue service",
+      "name": "house-items-catalogue-service Debug",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "program": "${workspaceFolder}/src/client_api/index.ts",
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
@@ -19,7 +19,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug Jest Tests for House Items Catalogue service",
+      "name": "house-items-catalogue-service Debug Tests",
       "program": "${workspaceFolder}/node_modules/jest/bin/jest.js",
       "args": ["--runInBand"],
       "console": "integratedTerminal",

@@ -1,0 +1,19 @@
+{
+  "folders": [
+    {
+      "path": "authentication-service"
+    },
+    {
+      "path": "client-app"
+    },
+    {
+      "path": "house-items-catalogue-service"
+    },
+    {
+      "path": "user-management-service"
+    },
+    {
+      "path": "global"
+    }
+  ],
+}
