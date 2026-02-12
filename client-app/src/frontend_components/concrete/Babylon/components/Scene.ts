@@ -14,6 +14,7 @@ export class BabylonScene implements AbstractScene {
   private scene: BABYLON.Scene;
   private camera: BABYLON.TargetCamera;
   private groundMesh: BABYLON.GroundMesh;
+  private dirLights: BABYLON.DirectionalLight[] = [];
   private isDisposed = false;
 
   constructor(
@@ -118,6 +119,21 @@ export class BabylonScene implements AbstractScene {
     this.camera.position = new BABYLON.Vector3(0, 20, 0);
   }
 
+  private addDirLight(name: string, direction: BABYLON.Vector3): void {
+     const dirLight = new BABYLON.DirectionalLight(
+        name,
+        direction,
+        this.scene
+    );
+    dirLight.intensity = 1.0;
+    this.dirLights.push(dirLight);
+  }
+
+  private addDirLights(): void {
+    this.addDirLight("dirLight1", new BABYLON.Vector3(-1, -1, -1));
+    this.addDirLight("dirLight2", new BABYLON.Vector3(1, -1, 1));
+  }
+
   private init(): void {
     this.engine = new BABYLON.Engine(
       this.canvas,
@@ -135,5 +151,6 @@ export class BabylonScene implements AbstractScene {
     this.moveCameraUp();
     this.addGradientBackground();
     this.addGround();
+    this.addDirLights();
   }
 }
