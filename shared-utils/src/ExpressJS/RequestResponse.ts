@@ -9,9 +9,10 @@ export class ExpressJSRequest<Body> implements AbstractRequest<Body> {
   ) {}
 }
 
-export class ExpressJSResponse<Data, Error>
-  implements AbstractResponse<Data, Error>
-{
+export class ExpressJSResponse<Data, Error> implements AbstractResponse<
+  Data,
+  Error
+> {
   constructor(private res: Response) {}
 
   public transformDataToJsonWithStatus(status: number, data: Data): void {
@@ -33,6 +34,6 @@ export const getReqResPair = (
 ): [AbstractRequest<any>, AbstractResponse<any, any>] => {
   return [
     new ExpressJSRequest(req.params, req.body, req.cookies),
-    new ExpressJSResponse(res),
+    new ExpressJSResponse(res)
   ];
 };

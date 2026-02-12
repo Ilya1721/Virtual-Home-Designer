@@ -5,7 +5,7 @@ import {
   CreateUserDTO,
   EditUserDTO,
   ReadUserDTO,
-  HttpStatus,
+  HttpStatus
 } from "shared-types";
 import { getHttpStatusByError } from "../../business_model/concrete/error";
 import { UserService } from "../../business_model/UserService";
@@ -77,7 +77,7 @@ export class UserController {
       const userId = req.params.id;
       await this.userService.deleteUser({ id: userId });
       res.transformDataToJsonWithStatus(HttpStatus.OK, {
-        message: USER_DELETED_SUCCESSFULLY,
+        message: USER_DELETED_SUCCESSFULLY
       });
     } catch (error) {
       const httpStatus = getHttpStatusByError(error);

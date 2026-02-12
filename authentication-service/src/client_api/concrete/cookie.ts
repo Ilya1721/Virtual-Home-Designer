@@ -11,7 +11,10 @@ export class CookieManager {
     private options: CookieOptions
   ) {}
 
-  public saveCookie(cookieValue: string, res: AbstractResponse<any, unknown>): void {
+  public saveCookie(
+    cookieValue: string,
+    res: AbstractResponse<any, unknown>
+  ): void {
     res.cookie(this.cookieName, cookieValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

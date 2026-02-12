@@ -1,6 +1,6 @@
 export enum UserRole {
   USER = "User",
-  ADMIN = "Admin",
+  ADMIN = "Admin"
 }
 
 export type AuthTokenPayload = {

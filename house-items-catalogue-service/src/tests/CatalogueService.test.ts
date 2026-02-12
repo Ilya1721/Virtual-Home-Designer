@@ -24,14 +24,14 @@ const mockedGroups = [
     id: "group1",
     name: "Living Room",
     description: "Items for the living room",
-    createdAt: new Date(),
+    createdAt: new Date()
   },
   {
     id: "group2",
     name: "Bedroom",
     description: "Items for the bedroom",
-    createdAt: new Date(),
-  },
+    createdAt: new Date()
+  }
 ];
 
 const mockedItems = [
@@ -42,7 +42,7 @@ const mockedItems = [
     previewImageUrl: "http://example.com/sofa.jpg",
     fileUrl: "http://example.com/sofa.obj",
     createdAt: new Date(),
-    group: mockedGroups[0],
+    group: mockedGroups[0]
   },
   {
     id: "item2",
@@ -51,8 +51,8 @@ const mockedItems = [
     previewImageUrl: "http://example.com/bed.jpg",
     fileUrl: "http://example.com/bed.obj",
     createdAt: new Date(),
-    group: mockedGroups[1],
-  },
+    group: mockedGroups[1]
+  }
 ];
 
 describe("getAllGroups", () => {
@@ -69,15 +69,19 @@ describe("getAllGroups", () => {
       BusinessError.PROBLEM_WITH_DATABASE
     );
     expect(getAllGroupsMock).toHaveBeenCalled();
-  })
+  });
 });
 
 describe("getAllItemsOfGroup", () => {
   test("Should return all items of a group from the database", async () => {
     const groupId = "group1";
-    getAllItemsOfGroupMock.mockResolvedValue(mockedItems.filter(item => item.group.id === groupId));
+    getAllItemsOfGroupMock.mockResolvedValue(
+      mockedItems.filter((item) => item.group.id === groupId)
+    );
     const items = await catalogueService.getAllItemsOfGroup(groupId);
-    expect(items).toEqual(mockedItems.filter(item => item.group.id === groupId));
+    expect(items).toEqual(
+      mockedItems.filter((item) => item.group.id === groupId)
+    );
     expect(getAllItemsOfGroupMock).toHaveBeenCalledWith(groupId);
   });
 

@@ -1,7 +1,10 @@
 import { AbstractRouter, AbstractServer } from "shared-types";
 import { AbstractExpressJSServer } from "shared-utils";
 
-export class ExpressJSServer extends AbstractExpressJSServer implements AbstractServer {
+export class ExpressJSServer
+  extends AbstractExpressJSServer
+  implements AbstractServer
+{
   constructor() {
     super();
   }

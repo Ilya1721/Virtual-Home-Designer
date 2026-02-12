@@ -6,5 +6,5 @@ export enum HttpStatus {
   FORBIDDEN = 403,
   NOT_FOUND = 404,
   CONFLICT = 409,
-  LOGIN_TIMEOUT = 440,
+  LOGIN_TIMEOUT = 440
 }

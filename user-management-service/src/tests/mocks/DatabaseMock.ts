@@ -1,9 +1,15 @@
-import { ReadUserDTO, CreateUserDTO, EditUserDTO, DeleteUserDTO, FullUserDTO } from 'shared-types';
-import { AbstractDatabase } from '../../database/abstract/database';
+import {
+  ReadUserDTO,
+  CreateUserDTO,
+  EditUserDTO,
+  DeleteUserDTO,
+  FullUserDTO
+} from "shared-types";
+import { AbstractDatabase } from "../../database/abstract/database";
 
 export class DatabaseMock implements AbstractDatabase {
   public async connect(): Promise<void> {}
-  
+
   public async disconnect(): Promise<void> {}
 
   public async getUserById(id: string): Promise<ReadUserDTO | null> {

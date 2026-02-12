@@ -2,19 +2,22 @@ import {
   CreateUserDTO,
   ReadUserDTO,
   AuthTokenPayload,
-  UserRole,
+  UserRole
 } from "shared-types";
 import { AbstractAuth, SignInDTO, SignUpDTO } from "./abstract/auth";
 import { AbstractDatabase } from "../database/abstract/database";
 import {
   authenticateUser,
-  createUser,
+  createUser
 } from "../services_communication/UserManagement";
 import { BusinessError } from "./concrete/error";
 import { toReadUserDTO } from "shared-utils";
 
 export class AuthService {
-  constructor(private auth: AbstractAuth, private database: AbstractDatabase) {}
+  constructor(
+    private auth: AbstractAuth,
+    private database: AbstractDatabase
+  ) {}
 
   public async signUp(user: CreateUserDTO): Promise<SignUpDTO> {
     const newUser = await createUser(user);
@@ -69,18 +72,18 @@ export class AuthService {
   private async getAuthData(user: ReadUserDTO): Promise<SignInDTO> {
     const accessToken = this.auth.generateAccessToken({
       userId: user.id,
-      role: user.role,
+      role: user.role
     });
     const refreshToken = this.auth.generateRefreshToken({
       userId: user.id,
-      role: user.role,
+      role: user.role
     });
     await this.database.setRefreshToken(user.id, refreshToken);
 
     return {
       user: toReadUserDTO(user),
       accessToken: accessToken,
-      refreshToken: refreshToken,
+      refreshToken: refreshToken
     };
   }
 }

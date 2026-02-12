@@ -19,6 +19,8 @@ export class MongoDBDatabase implements AbstractDatabase {
   }
 
   public async getAllItemsOfGroup(groupId: string): Promise<HouseItemDTO[]> {
-    return await HouseItemModel.find({ groupId }).populate("group").exec() as unknown as HouseItemDTO[];
+    return (await HouseItemModel.find({ groupId })
+      .populate("group")
+      .exec()) as unknown as HouseItemDTO[];
   }
 }

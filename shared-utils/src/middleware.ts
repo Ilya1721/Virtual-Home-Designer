@@ -1,4 +1,9 @@
-import { AbstractRequest, AbstractResponse, UserRole, HttpStatus } from "shared-types";
+import {
+  AbstractRequest,
+  AbstractResponse,
+  UserRole,
+  HttpStatus
+} from "shared-types";
 import { BEARER, USER_NOT_AUTHORIZED } from "./constants";
 import { isAuthenticated } from "./services_communication/auth";
 
@@ -16,20 +21,18 @@ export const requireAuthentication = async (
     accessToken = req.cookies.accessToken;
   }
 
-  const isUserAuthenticated = !!accessToken && await isAuthenticated(
-    req.params.id,
-    accessToken,
-    allowedRoles
-  );
+  const isUserAuthenticated =
+    !!accessToken &&
+    (await isAuthenticated(req.params.id, accessToken, allowedRoles));
 
   if (!isUserAuthenticated) {
     return res.transformErrorToJsonWithStatus(HttpStatus.UNAUTHORIZED, {
-      error: USER_NOT_AUTHORIZED,
+      error: USER_NOT_AUTHORIZED
     });
   }
 
   return res.transformDataToJsonWithStatus(HttpStatus.OK, {
-    isAuthenticated: true,
+    isAuthenticated: true
   });
 };
 

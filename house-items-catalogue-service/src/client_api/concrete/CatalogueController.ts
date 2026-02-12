@@ -3,7 +3,7 @@ import {
   AbstractResponse,
   HouseItemDTO,
   HouseItemGroup,
-  HttpStatus,
+  HttpStatus
 } from "shared-types";
 import { CatalogueService } from "../../business_model/CatalogueService";
 import { getHttpStatusByError } from "../../business_model/concrete/error";

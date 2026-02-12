@@ -13,6 +13,6 @@ if (!uri || !dbName) {
 
 export const connectMongoose = async (mongoose: any) => {
   await mongoose.connect(uri, {
-    dbName,
+    dbName
   });
 };

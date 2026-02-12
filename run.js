@@ -10,23 +10,23 @@ const PROJECTS = [
   {
     name: "authentication-service",
     command: "npm",
-    args: ["run", "dev"],
+    args: ["run", "dev"]
   },
   {
     name: "house-items-catalogue-service",
     command: "npm",
-    args: ["run", "dev"],
+    args: ["run", "dev"]
   },
   {
     name: "user-management-service",
     command: "npm",
-    args: ["run", "dev"],
+    args: ["run", "dev"]
   },
   {
     name: "client-app",
     command: "npm",
-    args: ["run", "start"],
-  },
+    args: ["run", "start"]
+  }
 ];
 
 const ROOT = process.cwd();
@@ -51,7 +51,7 @@ function runProject({ name, command, args }) {
   const child = spawn(command, args, {
     cwd: projectPath,
     stdio: "inherit",
-    shell: true,
+    shell: true
   });
 
   child.on("exit", (code) => {

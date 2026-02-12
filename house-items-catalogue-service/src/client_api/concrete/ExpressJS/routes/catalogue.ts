@@ -19,7 +19,9 @@ export class CatalogueRouter implements AbstractRouter {
 
   private setGetAllItemsOfGroupRoute() {
     this.router.get("/groups/:id/items", async (req, res) => {
-      await this.catalogueController.getAllItemsOfGroup(...getReqResPair(req, res));
+      await this.catalogueController.getAllItemsOfGroup(
+        ...getReqResPair(req, res)
+      );
     });
   }
 

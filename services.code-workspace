@@ -15,8 +15,5 @@
     {
       "path": "global"
     }
-  ],
-  "settings": {
-    "prettier.trailingComma": "none"
-  }
+  ]
 }

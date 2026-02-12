@@ -40,9 +40,13 @@ export class UserRouter implements AbstractRouter {
   }
 
   private setDeleteUserRoute() {
-    this.router.delete("/:id", requireAuthentication(UserRole.ADMIN), async (req, res) => {
-      await this.userController.deleteUser(...getReqResPair(req, res));
-    });
+    this.router.delete(
+      "/:id",
+      requireAuthentication(UserRole.ADMIN),
+      async (req, res) => {
+        await this.userController.deleteUser(...getReqResPair(req, res));
+      }
+    );
   }
 
   private setAuthenticateUserRoute() {

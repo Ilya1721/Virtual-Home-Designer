@@ -13,7 +13,7 @@ const buttonStyle = {
   backgroundColor: "#e3f2fd",
   mr: 1,
   minWidth: 120,
-  "&:hover": { backgroundColor: "#bbdefb" },
+  "&:hover": { backgroundColor: "#bbdefb" }
 };
 
 interface HeaderProps {
@@ -45,7 +45,11 @@ const Header: React.FC<HeaderProps> = ({ onSignUp, onSignIn, authService }) => {
   return (
     <AppBar
       position="absolute"
-      sx={{ backgroundColor: "rgba(0, 0, 0, 0)", color: "#333", boxShadow: "none" }}
+      sx={{
+        backgroundColor: "rgba(0, 0, 0, 0)",
+        color: "#333",
+        boxShadow: "none"
+      }}
     >
       <Toolbar>
         <Typography variant="h6" sx={{ flexGrow: 1, color: "#333" }}>

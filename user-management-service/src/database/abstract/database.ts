@@ -3,7 +3,7 @@ import {
   CreateUserDTO,
   EditUserDTO,
   DeleteUserDTO,
-  FullUserDTO,
+  FullUserDTO
 } from "shared-types";
 
 export interface AbstractDatabase {

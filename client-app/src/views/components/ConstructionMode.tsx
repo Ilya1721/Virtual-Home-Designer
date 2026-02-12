@@ -9,13 +9,13 @@ import { GlobalContext } from "../../Main";
 const iconSx: React.CSSProperties = {
   width: 32,
   height: 32,
-  objectFit: "contain",
+  objectFit: "contain"
 };
 
 const buttonTextSx: React.CSSProperties = {
   marginTop: 1,
   fontSize: 12,
-  color: "#000",
+  color: "#000"
 };
 
 const itemButtonSx = {
@@ -24,21 +24,21 @@ const itemButtonSx = {
   padding: 1,
   borderRadius: 2,
   transition: "background-color 0.12s ease-in-out",
-  "&:hover": { backgroundColor: "#efeeeeff" },
+  "&:hover": { backgroundColor: "#efeeeeff" }
 };
 
 const buttonsGridSx: React.CSSProperties = {
   display: "grid",
   gridTemplateColumns: "repeat(3, 1fr)",
   gap: 2,
-  margin: 1,
+  margin: 1
 };
 
 const modeNameSx: React.CSSProperties = {
   margin: 1,
   paddingLeft: 2,
   fontSize: 16,
-  fontWeight: 600,
+  fontWeight: 600
 };
 
 type Mode = "wall" | "window" | "door" | "none";
@@ -48,7 +48,7 @@ interface ConstructionModeProps {
 }
 
 const ConstructionMode: React.FC<ConstructionModeProps> = ({
-  changeCursor,
+  changeCursor
 }) => {
   const [activeMode, setActiveMode] = React.useState<Mode>("none");
   const { scene } = React.useContext(GlobalContext);
@@ -77,7 +77,7 @@ const ConstructionMode: React.FC<ConstructionModeProps> = ({
     const isActive = activeMode === mode;
     return {
       backgroundColor: isActive ? "#cfcfcfff" : "inherit",
-      "&:hover": { backgroundColor: isActive ? "#cfcfcfff" : "inherit" },
+      "&:hover": { backgroundColor: isActive ? "#cfcfcfff" : "inherit" }
     };
   };
 

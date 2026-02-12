@@ -9,13 +9,13 @@ const userSchema = new Schema<User>(
     role: {
       type: String,
       enum: Object.values(UserRole),
-      required: true,
+      required: true
     },
-    createdAt: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: Date.now }
   },
   {
     toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    toObject: { virtuals: true }
   }
 );
 

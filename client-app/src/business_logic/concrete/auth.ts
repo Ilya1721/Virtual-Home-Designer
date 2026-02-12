@@ -1,8 +1,8 @@
 import { CreateUserDTO, ReadUserDTO } from "shared-types";
-import * as authService from "../../services_communication/auth"; 
+import * as authService from "../../services_communication/auth";
 
 export class AuthService {
-  constructor(private saveUser: (user: ReadUserDTO | null) => void ) {}
+  constructor(private saveUser: (user: ReadUserDTO | null) => void) {}
 
   public async signUp(createUserDTO: CreateUserDTO): Promise<void> {
     const user = await authService.signUp(createUserDTO);
@@ -19,9 +19,7 @@ export class AuthService {
     this.saveUser(null);
   }
 
-  public async refreshAccess(
-    userId: string
-  ): Promise<void> {
+  public async refreshAccess(userId: string): Promise<void> {
     await authService.refreshAccess(userId);
   }
 }

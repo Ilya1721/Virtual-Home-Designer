@@ -4,14 +4,14 @@ import { NextFunction } from "express";
 import { getReqResPair } from "./RequestResponse";
 
 export const requireAuthentication = (...allowedRoles: UserRole[]) => {
-  return async (
-    req: any,
-    res: any,
-    next: NextFunction
-  ): Promise<void> => {
+  return async (req: any, res: any, next: NextFunction): Promise<void> => {
     try {
       const [abstractReq, abstractRes] = getReqResPair(req, res);
-      await AbstractMiddleware.requireAuthentication(abstractReq, abstractRes, allowedRoles);
+      await AbstractMiddleware.requireAuthentication(
+        abstractReq,
+        abstractRes,
+        allowedRoles
+      );
       next();
     } catch (err) {
       next(err);

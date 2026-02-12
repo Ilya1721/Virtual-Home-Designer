@@ -16,7 +16,7 @@ const containerSx = {
   position: "fixed",
   left: 16,
   top: 72,
-  bottom: 16,
+  bottom: 16
 };
 
 const buttonBaseSx = {
@@ -25,19 +25,19 @@ const buttonBaseSx = {
   flexDirection: "column",
   padding: 1,
   borderRadius: 2,
-  marginBottom: 1,
+  marginBottom: 1
 };
 
 const imageSx: React.CSSProperties = {
   width: 32,
   height: 32,
-  objectFit: "contain",
+  objectFit: "contain"
 };
 
 const buttonTextSx: React.CSSProperties = {
   color: "#000",
   paddingTop: 1,
-  fontSize: 12,
+  fontSize: 12
 };
 
 const activeModeSx: React.CSSProperties = {
@@ -47,7 +47,7 @@ const activeModeSx: React.CSSProperties = {
   width: 250,
   backgroundColor: "#ffffff",
   borderRadius: 2,
-  boxShadow: "0 2px 6px rgba(0,0,0,0.12)",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.12)"
 };
 
 type Mode = "construction" | "furniture";
@@ -63,7 +63,7 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({ changeCursor }) => {
     const isActive = active === mode;
     return {
       backgroundColor: isActive ? "#cfcfcf" : "#ececec",
-      "&:hover": { backgroundColor: isActive ? "#cfcfcf" : "#dfdfdf" },
+      "&:hover": { backgroundColor: isActive ? "#cfcfcf" : "#dfdfdf" }
     };
   };
 
@@ -86,7 +86,7 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({ changeCursor }) => {
           sx={{
             ...buttonBaseSx,
             ...makeStylesForBtn("furniture"),
-            marginBottom: 0,
+            marginBottom: 0
           }}
         >
           <img src="/icons/furniture.png" alt="furniture" style={imageSx} />

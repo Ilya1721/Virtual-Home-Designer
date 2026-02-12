@@ -43,7 +43,7 @@ const Main = () => {
       sceneInjection,
       sceneDisposal,
       user,
-      setUser,
+      setUser
     }),
     [scene, sceneDisposal, sceneInjection, user]
   );

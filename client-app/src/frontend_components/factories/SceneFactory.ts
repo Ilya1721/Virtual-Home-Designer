@@ -6,4 +6,4 @@ export const createBabylonScene = (
   sceneOptions: SceneOptions
 ): AbstractScene => {
   return new BabylonScene(canvas, sceneOptions);
-}
+};

@@ -3,7 +3,7 @@ import {
   ARC_ROTATE_CAMERA_ALPHA,
   ARC_ROTATE_CAMERA_BETA,
   ARC_ROTATE_CAMERA_RADIUS,
-  ARC_ROTATE_CAMERA_TARGET,
+  ARC_ROTATE_CAMERA_TARGET
 } from "../common/constants";
 
 export const createBabylonArcRotateCamera = (
@@ -18,4 +18,4 @@ export const createBabylonArcRotateCamera = (
     scene
   );
   return camera;
-}
+};

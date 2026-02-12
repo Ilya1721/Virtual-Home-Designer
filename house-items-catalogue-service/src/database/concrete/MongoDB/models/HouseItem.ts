@@ -14,13 +14,13 @@ const houseItemSchema = new Schema<HouseItemDB>(
     group: {
       type: Schema.Types.ObjectId,
       ref: "HouseItemGroup",
-      required: true,
+      required: true
     },
-    createdAt: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: Date.now }
   },
   {
     toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    toObject: { virtuals: true }
   }
 );
 

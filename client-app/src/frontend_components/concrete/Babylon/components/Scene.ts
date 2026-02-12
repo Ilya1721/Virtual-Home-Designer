@@ -4,7 +4,7 @@ import { AbstractScene, SceneOptions } from "../../../abstract/AbstractScene";
 import { BACKGROUND_TEXTURE_SIZE } from "../../constants";
 import {
   NO_RECURSE_DISPOSE_CAMERA,
-  DISPOSE_CAMERA_MAT_AND_TEXTURES,
+  DISPOSE_CAMERA_MAT_AND_TEXTURES
 } from "../common/constants";
 import { createBabylonArcRotateCamera } from "../factories/CameraFactory";
 import { createBabylonScene } from "../factories/SceneFactory";
@@ -99,7 +99,7 @@ export class BabylonScene implements AbstractScene {
       "ground",
       {
         width: 50,
-        height: 50,
+        height: 50
       },
       this.scene
     );
@@ -120,11 +120,7 @@ export class BabylonScene implements AbstractScene {
   }
 
   private addDirLight(name: string, direction: BABYLON.Vector3): void {
-     const dirLight = new BABYLON.DirectionalLight(
-        name,
-        direction,
-        this.scene
-    );
+    const dirLight = new BABYLON.DirectionalLight(name, direction, this.scene);
     dirLight.intensity = 1.0;
     this.dirLights.push(dirLight);
   }

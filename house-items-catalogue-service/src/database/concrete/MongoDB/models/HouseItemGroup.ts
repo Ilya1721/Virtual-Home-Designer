@@ -5,11 +5,11 @@ const houseItemGroupSchema = new Schema<HouseItemGroup>(
   {
     name: { type: String, required: true },
     description: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: Date.now }
   },
   {
     toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    toObject: { virtuals: true }
   }
 );
 

@@ -10,10 +10,12 @@ export class AuthMock implements AbstractAuth {
     return "";
   }
 
-  public async getTokenPayload(token: string): Promise<AuthTokenPayload | null> {
+  public async getTokenPayload(
+    token: string
+  ): Promise<AuthTokenPayload | null> {
     return {
       userId: "1",
-      role: UserRole.USER,
+      role: UserRole.USER
     };
   }
 }

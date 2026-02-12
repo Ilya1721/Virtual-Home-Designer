@@ -1,4 +1,6 @@
-const { HouseItemGroupModel } = require("../dist/database/concrete/MongoDB/models/HouseItemGroup");
+const {
+  HouseItemGroupModel
+} = require("../dist/database/concrete/MongoDB/models/HouseItemGroup");
 const { connectMongoose } = require("shared-utils");
 const mongoose = require("mongoose");
 
@@ -7,7 +9,7 @@ async function up(db, client) {
   await HouseItemGroupModel.create({
     name: "Furniture",
     description: "Tables, chairs, sofas, etc.",
-    createdAt: new Date(),
+    createdAt: new Date()
   });
 }
 

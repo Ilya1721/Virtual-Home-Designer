@@ -1,5 +1,5 @@
 import { SafePasswordHandler } from "../../../business_model/abstract/password";
-import argon2 from 'argon2';
+import argon2 from "argon2";
 
 export class Argon2PasswordHandler implements SafePasswordHandler {
   public async isEqual(

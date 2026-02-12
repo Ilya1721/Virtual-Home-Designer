@@ -1,4 +1,6 @@
-const { UserAuthModel } = require("../dist/database/concrete/MongoDB/models/userAuth");
+const {
+  UserAuthModel
+} = require("../dist/database/concrete/MongoDB/models/userAuth");
 const { connectMongoose } = require("shared-utils");
 const mongoose = require("mongoose");
 

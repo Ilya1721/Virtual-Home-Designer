@@ -5,7 +5,7 @@ export enum BusinessError {
 }
 
 export const errorHttpStatusMap: Record<BusinessError, number> = {
-  [BusinessError.PROBLEM_WITH_DATABASE]: HttpStatus.INTERNAL_SERVER_ERROR,
+  [BusinessError.PROBLEM_WITH_DATABASE]: HttpStatus.INTERNAL_SERVER_ERROR
 };
 
 export const getHttpStatusByError = (error: unknown): number => {

@@ -2,12 +2,12 @@ import { HttpStatus } from "shared-types";
 
 export enum BusinessError {
   INVALID_REFRESH_TOKEN = "Invalid refresh token",
-  INVALID_ACCESS_TOKEN = "Invalid access token",
+  INVALID_ACCESS_TOKEN = "Invalid access token"
 }
 
 export const errorHttpStatusMap: Record<BusinessError, number> = {
   [BusinessError.INVALID_REFRESH_TOKEN]: HttpStatus.LOGIN_TIMEOUT,
-  [BusinessError.INVALID_ACCESS_TOKEN]: HttpStatus.UNAUTHORIZED,
+  [BusinessError.INVALID_ACCESS_TOKEN]: HttpStatus.UNAUTHORIZED
 };
 
 export const getHttpStatusByError = (error: unknown): number => {

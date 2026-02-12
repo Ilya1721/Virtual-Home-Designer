@@ -187,7 +187,7 @@ export class WallMode implements AbstractConstructionMode {
     const path1 = [this.startPoint.add(orthoVec), this.endPoint.add(orthoVec)];
     const path2 = [
       this.startPoint.subtract(orthoVec),
-      this.endPoint.subtract(orthoVec),
+      this.endPoint.subtract(orthoVec)
     ];
 
     return [path1, path2];
@@ -274,7 +274,7 @@ export class WallMode implements AbstractConstructionMode {
       "wallRibbon",
       {
         pathArray,
-        updatable: true,
+        updatable: true
       },
       this.scene
     );
@@ -286,7 +286,7 @@ export class WallMode implements AbstractConstructionMode {
       null,
       {
         pathArray,
-        instance: this.ribbon,
+        instance: this.ribbon
       },
       this.scene
     );

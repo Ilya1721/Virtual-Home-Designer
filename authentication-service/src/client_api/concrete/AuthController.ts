@@ -5,7 +5,7 @@ import {
   CreateUserDTO,
   IsAuthenticatedReqDTO,
   ReadUserDTO,
-  HttpStatus,
+  HttpStatus
 } from "shared-types";
 import { AuthService } from "../../business_model/AuthService";
 import { getHttpStatusByError } from "../../business_model/concrete/error";
@@ -24,11 +24,11 @@ export class AuthController {
   constructor(private authService: AuthService) {
     this.accessTokenCookieManager = new CookieManager("accessToken", {
       maxAge: accessTokenExpiresIn,
-      path: "/api",
+      path: "/api"
     });
     this.refreshTokenCookieManager = new CookieManager("refreshToken", {
       maxAge: refreshTokenExpiresIn,
-      path: "/auth/refresh",
+      path: "/auth/refresh"
     });
   }
 
@@ -79,7 +79,7 @@ export class AuthController {
       await this.authService.signOut(userId);
       this.expireAuthTokensInCookies(res);
       res.transformDataToJsonWithStatus(HttpStatus.OK, {
-        message: SIGNED_OUT_SUCCESSFULY,
+        message: SIGNED_OUT_SUCCESSFULY
       });
     } catch (error) {
       const httpStatus = getHttpStatusByError(error);
@@ -134,9 +134,7 @@ export class AuthController {
     this.refreshTokenCookieManager.saveCookie(refreshToken, res);
   }
 
-  private expireAuthTokensInCookies(
-    res: AbstractResponse<any, unknown>
-  ): void {
+  private expireAuthTokensInCookies(res: AbstractResponse<any, unknown>): void {
     this.accessTokenCookieManager.expireCookie(res);
     this.refreshTokenCookieManager.expireCookie(res);
   }

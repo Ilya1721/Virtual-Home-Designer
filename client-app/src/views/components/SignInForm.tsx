@@ -5,7 +5,7 @@ import {
   TextField,
   Typography,
   Backdrop,
-  Fade,
+  Fade
 } from "@mui/material";
 import React, { useState } from "react";
 import { AuthService } from "../../business_logic/concrete/auth";
@@ -27,22 +27,27 @@ const style = {
   borderRadius: 2,
   boxShadow: 24,
   p: 4,
-  outline: "none",
+  outline: "none"
 };
 
 const backdropStyle = {
   backdropFilter: "blur(4px)",
-  backgroundColor: "rgba(0,0,0,0.3)",
+  backgroundColor: "rgba(0,0,0,0.3)"
 };
 
 const initialForm = {
   email: "",
-  password: "",
+  password: ""
 };
 
 const fieldStyle = { mb: 2, backgroundColor: "#fff" };
 
-const SignInForm: React.FC<SignInFormProps> = ({ open, onClose, onSuccess, authService }) => {
+const SignInForm: React.FC<SignInFormProps> = ({
+  open,
+  onClose,
+  onSuccess,
+  authService
+}) => {
   const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +56,11 @@ const SignInForm: React.FC<SignInFormProps> = ({ open, onClose, onSuccess, authS
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const renderTextField = (name: "email" | "password", label: string, type: string) => (
+  const renderTextField = (
+    name: "email" | "password",
+    label: string,
+    type: string
+  ) => (
     <TextField
       label={label}
       name={name}
@@ -110,7 +119,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ open, onClose, onSuccess, authS
             sx={{
               backgroundColor: "#1976d2",
               color: "#fff",
-              "&:hover": { backgroundColor: "#1565c0" },
+              "&:hover": { backgroundColor: "#1565c0" }
             }}
           >
             {loading ? "Signing in..." : "Sign In"}

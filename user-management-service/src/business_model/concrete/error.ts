@@ -9,7 +9,7 @@ export enum BusinessError {
   CAN_NOT_CHANGE_USER_EMAIL = "It's not possible to change user email",
   USER_WITH_SUCH_ID_NOT_FOUND = "User with such ID not found",
   USER_WITH_SUCH_EMAIL_OR_PASSWORD_NOT_FOUND = "User with such email or password not found",
-  USER_NOT_AUTHORIZED = "User not authorized",
+  USER_NOT_AUTHORIZED = "User not authorized"
 }
 
 export const errorHttpStatusMap: Record<BusinessError, number> = {
@@ -20,8 +20,9 @@ export const errorHttpStatusMap: Record<BusinessError, number> = {
   [BusinessError.USER_PASSWORD_NOT_VALID]: HttpStatus.BAD_REQUEST,
   [BusinessError.CAN_NOT_CHANGE_USER_EMAIL]: HttpStatus.BAD_REQUEST,
   [BusinessError.USER_WITH_SUCH_ID_NOT_FOUND]: HttpStatus.NOT_FOUND,
-  [BusinessError.USER_WITH_SUCH_EMAIL_OR_PASSWORD_NOT_FOUND ]: HttpStatus.NOT_FOUND,
-  [BusinessError.USER_NOT_AUTHORIZED ]: HttpStatus.UNAUTHORIZED,
+  [BusinessError.USER_WITH_SUCH_EMAIL_OR_PASSWORD_NOT_FOUND]:
+    HttpStatus.NOT_FOUND,
+  [BusinessError.USER_NOT_AUTHORIZED]: HttpStatus.UNAUTHORIZED
 };
 
 export const getHttpStatusByError = (error: unknown): number => {

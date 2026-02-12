@@ -1,9 +1,5 @@
 import axios from "axios";
-import {
-  AuthenticateUserDTO,
-  CreateUserDTO,
-  ReadUserDTO,
-} from "shared-types";
+import { AuthenticateUserDTO, CreateUserDTO, ReadUserDTO } from "shared-types";
 
 const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL;
 
@@ -18,7 +14,7 @@ export const signIn = async (
   const { email, password } = signInDTO;
   const res = await axios.post<ReadUserDTO>(`${AUTH_SERVICE_URL}/signin`, {
     email,
-    password,
+    password
   });
   return res.data;
 };
@@ -28,8 +24,7 @@ export const signOut = async (userId: string): Promise<void> => {
 };
 
 export const refreshAccess = async (userId: string): Promise<void> => {
-  await axios.post(
-    `${AUTH_SERVICE_URL}/${userId}/refresh`,
-    { withCredentials: true }
-  );
+  await axios.post(`${AUTH_SERVICE_URL}/${userId}/refresh`, {
+    withCredentials: true
+  });
 };

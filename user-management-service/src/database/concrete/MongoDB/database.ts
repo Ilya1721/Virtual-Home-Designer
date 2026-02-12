@@ -3,7 +3,7 @@ import {
   DeleteUserDTO,
   EditUserDTO,
   ReadUserDTO,
-  FullUserDTO,
+  FullUserDTO
 } from "shared-types";
 import { AbstractDatabase } from "../../abstract/database";
 import mongoose from "mongoose";

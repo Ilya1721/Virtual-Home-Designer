@@ -35,7 +35,7 @@ export class MongoDBDatabase implements AbstractDatabase {
   ): Promise<void> {
     await UserAuthModel.create({
       userId,
-      refreshToken,
+      refreshToken
     });
   }
 

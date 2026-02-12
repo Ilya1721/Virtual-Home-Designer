@@ -3,7 +3,7 @@ import {
   DeleteUserDTO,
   EditUserDTO,
   FullUserDTO,
-  ReadUserDTO,
+  ReadUserDTO
 } from "shared-types";
 import { AbstractDatabase } from "../database/abstract/database";
 import { BusinessError } from "./concrete/error";

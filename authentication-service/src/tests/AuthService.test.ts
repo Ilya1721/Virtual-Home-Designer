@@ -2,7 +2,7 @@ import {
   AuthTokenPayload,
   CreateUserDTO,
   ReadUserDTO,
-  UserRole,
+  UserRole
 } from "shared-types";
 import { AuthMock } from "./mocks/AuthMock";
 import { AuthService } from "../business_model/AuthService";
@@ -15,12 +15,12 @@ const newUser: CreateUserDTO = {
   email: "johndoe@gmail.com",
   password: "password",
   nickname: "John Doe",
-  role: UserRole.USER,
+  role: UserRole.USER
 };
 
 const authTokenPayloadMock: AuthTokenPayload = {
   userId: "1",
-  role: UserRole.USER,
+  role: UserRole.USER
 };
 
 const validRefreshToken = "ValidRefreshToken";
@@ -40,7 +40,7 @@ const createUserMock = jest
       email: user.email,
       nickname: user.nickname,
       role: user.role,
-      createdAt: new Date(),
+      createdAt: new Date()
     } as ReadUserDTO;
   });
 const authenticateUserMock = jest
@@ -52,7 +52,7 @@ const authenticateUserMock = jest
         email: email,
         nickname: "John Doe",
         role: UserRole.USER,
-        createdAt: new Date(),
+        createdAt: new Date()
       } as ReadUserDTO;
     }
   );
@@ -100,7 +100,7 @@ describe("SignUp", () => {
       async (user: CreateUserDTO): Promise<ReadUserDTO> => {
         return {
           ...user,
-          password: "password",
+          password: "password"
         } as any;
       }
     );
@@ -131,7 +131,7 @@ describe("SignIn", () => {
           nickname: "John Doe",
           role: UserRole.USER,
           createdAt: new Date(),
-          password: "password",
+          password: "password"
         } as any;
       }
     );

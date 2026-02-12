@@ -3,7 +3,10 @@ import { AbstractDatabase } from "../../../database/abstract/database";
 import { BusinessError } from "../error";
 
 export class EditUserValidator {
-  constructor(private user: EditUserDTO, private database: AbstractDatabase) {}
+  constructor(
+    private user: EditUserDTO,
+    private database: AbstractDatabase
+  ) {}
 
   public async validate(): Promise<void> {
     const { id, email } = this.user;

@@ -35,13 +35,13 @@ describe("Authenticate user", () => {
   const res = {
     transformDataToJsonWithStatus: jest.fn(),
     transformErrorToJsonWithStatus: jest.fn(),
-    cookie: jest.fn(),
+    cookie: jest.fn()
   } as AbstractResponse<unknown, unknown>;
 
   test("Should return HttpStatus.UNAUTHORIZED if neither authHeader nor cookie is provided", async () => {
     const req = {
       authHeader: undefined,
-      cookies: {},
+      cookies: {}
     } as AbstractRequest<unknown>;
     await expectUnauthorized(req, res);
   });
@@ -49,7 +49,7 @@ describe("Authenticate user", () => {
   test("Should return HttpStatus.UNAUTHORIZED if authHeader does not start with 'Bearer '", async () => {
     const req = {
       authHeader: "token",
-      cookies: {},
+      cookies: {}
     } as AbstractRequest<unknown>;
     await expectUnauthorized(req, res);
   });
@@ -59,7 +59,7 @@ describe("Authenticate user", () => {
       authHeader: "Bearer ",
       params: { id: "1" },
       cookies: {},
-      body: {},
+      body: {}
     } as AbstractRequest<unknown>;
     await expectUnauthorized(req, res);
   });
@@ -69,7 +69,7 @@ describe("Authenticate user", () => {
       authHeader: undefined,
       params: { id: "1" },
       cookies: { accessToken: "" },
-      body: {},
+      body: {}
     } as AbstractRequest<unknown>;
     await expectUnauthorized(req, res);
   });
@@ -79,7 +79,7 @@ describe("Authenticate user", () => {
       authHeader: undefined,
       params: { id: "1" },
       cookies: { accessToken: "token" },
-      body: {},
+      body: {}
     } as AbstractRequest<unknown>;
     isAuthenticatedMock.mockResolvedValueOnce(false);
     await expectUnauthorized(req, res);
@@ -90,7 +90,7 @@ describe("Authenticate user", () => {
       authHeader: "Bearer token",
       params: { id: "1" },
       cookies: {},
-      body: {},
+      body: {}
     } as AbstractRequest<unknown>;
     isAuthenticatedMock.mockResolvedValueOnce(false);
     expectUnauthorized(req, res);

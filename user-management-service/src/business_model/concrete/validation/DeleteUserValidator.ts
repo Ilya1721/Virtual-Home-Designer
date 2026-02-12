@@ -3,7 +3,10 @@ import { AbstractDatabase } from "../../../database/abstract/database";
 import { BusinessError } from "../error";
 
 export class DeleteUserValidator {
-  constructor(private user: DeleteUserDTO, private database: AbstractDatabase) {}
+  constructor(
+    private user: DeleteUserDTO,
+    private database: AbstractDatabase
+  ) {}
 
   public async validate(): Promise<void> {
     const { id } = this.user;

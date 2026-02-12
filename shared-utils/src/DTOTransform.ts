@@ -8,7 +8,7 @@ export const toReadUserDTO = <UserType extends ReadUserDTO>(
     email: user.email,
     nickname: user.nickname,
     role: user.role,
-    createdAt: user.createdAt,
+    createdAt: user.createdAt
   };
 };
 

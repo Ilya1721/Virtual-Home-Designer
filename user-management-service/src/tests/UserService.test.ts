@@ -4,7 +4,7 @@ import {
   EditUserDTO,
   FullUserDTO,
   ReadUserDTO,
-  UserRole,
+  UserRole
 } from "shared-types";
 import { UserService } from "../business_model/UserService";
 import { DatabaseMock } from "./mocks/DatabaseMock";
@@ -45,17 +45,17 @@ const defaultMockedUser: ReadUserDTO = {
   email: "JohnDoe@gmail.com",
   nickname: "JohnDoe",
   role: UserRole.USER,
-  createdAt: new Date(),
+  createdAt: new Date()
 };
 
 const fullMockedUser: FullUserDTO = {
   ...defaultMockedUser,
-  password: "password",
+  password: "password"
 };
 
 const userWithPassword: any = {
   ...defaultMockedUser,
-  password: "password",
+  password: "password"
 };
 
 describe("getAllUsers", () => {
@@ -125,7 +125,7 @@ describe("createUser", () => {
     await expect(
       userService.createUser({
         ...defaultMockedUser,
-        password: mockedPassword,
+        password: mockedPassword
       })
     ).rejects.toThrow(BusinessError.USER_WITH_SUCH_EMAIL_ALREADY_EXISTS);
   });
@@ -136,7 +136,7 @@ describe("createUser", () => {
     await expect(
       userService.createUser({
         ...defaultMockedUser,
-        password: mockedPassword,
+        password: mockedPassword
       })
     ).rejects.toThrow(BusinessError.PROBLEM_WITH_DATABASE);
   });
@@ -146,7 +146,7 @@ describe("createUser", () => {
       userService.createUser({
         ...defaultMockedUser,
         email: "invalidEmail",
-        password: mockedPassword,
+        password: mockedPassword
       })
     ).rejects.toThrow(BusinessError.USER_EMAIL_NOT_VALID);
   });
@@ -155,7 +155,7 @@ describe("createUser", () => {
     await expect(
       userService.createUser({
         ...defaultMockedUser,
-        password: "",
+        password: ""
       })
     ).rejects.toThrow(BusinessError.USER_PASSWORD_NOT_VALID);
   });
@@ -173,7 +173,7 @@ describe("editUser", () => {
     dbGetUserByIdMock.mockResolvedValueOnce(defaultMockedUser);
     dbEditUserMock.mockResolvedValueOnce(defaultMockedUser);
     const user = await userService.editUser({
-      ...defaultMockedUser,
+      ...defaultMockedUser
     });
     expect(user).toEqual(defaultMockedUser);
   });
@@ -181,7 +181,7 @@ describe("editUser", () => {
   test("Should change the nickname", async () => {
     const mockedEditedUser: ReadUserDTO = {
       ...defaultMockedUser,
-      nickname: "NewNickname",
+      nickname: "NewNickname"
     };
     dbGetUserByIdMock.mockResolvedValueOnce(defaultMockedUser);
     dbEditUserMock.mockResolvedValueOnce(mockedEditedUser as ReadUserDTO);
@@ -194,7 +194,7 @@ describe("editUser", () => {
     await expect(
       userService.editUser({
         ...defaultMockedUser,
-        email: "NewEmail@gmail.com",
+        email: "NewEmail@gmail.com"
       })
     ).rejects.toThrow(BusinessError.CAN_NOT_CHANGE_USER_EMAIL);
   });
@@ -203,7 +203,7 @@ describe("editUser", () => {
     dbGetUserByIdMock.mockResolvedValueOnce(null);
     await expect(
       userService.editUser({
-        ...defaultMockedUser,
+        ...defaultMockedUser
       })
     ).rejects.toThrow(BusinessError.USER_WITH_SUCH_ID_NOT_FOUND);
   });
@@ -212,7 +212,7 @@ describe("editUser", () => {
     dbGetUserByIdMock.mockRejectedValueOnce(new Error("Some database error"));
     await expect(
       userService.editUser({
-        ...defaultMockedUser,
+        ...defaultMockedUser
       })
     ).rejects.toThrow(BusinessError.PROBLEM_WITH_DATABASE);
   });
@@ -230,7 +230,7 @@ describe("deleteUser", () => {
     dbGetUserByIdMock.mockResolvedValueOnce(defaultMockedUser);
     dbDeleteUserMock.mockResolvedValueOnce(undefined);
     await userService.deleteUser({
-      ...defaultMockedUser,
+      ...defaultMockedUser
     });
     expect(dbDeleteUserMock).toHaveBeenCalled();
   });
@@ -239,7 +239,7 @@ describe("deleteUser", () => {
     dbGetUserByIdMock.mockResolvedValueOnce(null);
     await expect(
       userService.deleteUser({
-        ...defaultMockedUser,
+        ...defaultMockedUser
       })
     ).rejects.toThrow(BusinessError.USER_WITH_SUCH_ID_NOT_FOUND);
   });
@@ -248,7 +248,7 @@ describe("deleteUser", () => {
     dbGetUserByIdMock.mockRejectedValueOnce(new Error("Some database error"));
     await expect(
       userService.deleteUser({
-        ...defaultMockedUser,
+        ...defaultMockedUser
       })
     ).rejects.toThrow(BusinessError.PROBLEM_WITH_DATABASE);
   });

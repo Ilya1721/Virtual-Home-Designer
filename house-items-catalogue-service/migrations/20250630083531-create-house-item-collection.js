@@ -1,4 +1,6 @@
-const { HouseItemModel } = require("../dist/database/concrete/MongoDB/models/HouseItem");
+const {
+  HouseItemModel
+} = require("../dist/database/concrete/MongoDB/models/HouseItem");
 const { connectMongoose } = require("shared-utils");
 const mongoose = require("mongoose");
 

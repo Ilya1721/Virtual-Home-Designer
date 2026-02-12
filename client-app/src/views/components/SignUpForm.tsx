@@ -6,7 +6,7 @@ import {
   Typography,
   Backdrop,
   Fade,
-  MenuItem,
+  MenuItem
 } from "@mui/material";
 import React, { useState } from "react";
 import { CreateUserDTO, UserRole } from "shared-types";
@@ -29,19 +29,19 @@ const style = {
   borderRadius: 2,
   boxShadow: 24,
   p: 4,
-  outline: "none",
+  outline: "none"
 };
 
 const backdropStyle = {
   backdropFilter: "blur(4px)",
-  backgroundColor: "rgba(0,0,0,0.3)",
+  backgroundColor: "rgba(0,0,0,0.3)"
 };
 
 const initialForm: CreateUserDTO = {
   email: "",
   password: "",
   nickname: "",
-  role: UserRole.USER,
+  role: UserRole.USER
 };
 
 const fieldStyle = { mb: 2, backgroundColor: "#fff" };
@@ -50,7 +50,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
   open,
   onClose,
   onSuccess,
-  authService,
+  authService
 }) => {
   const [form, setForm] = useState<CreateUserDTO>(initialForm);
   const [loading, setLoading] = useState(false);
@@ -142,7 +142,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
             sx={{
               backgroundColor: "#1976d2",
               color: "#fff",
-              "&:hover": { backgroundColor: "#1565c0" },
+              "&:hover": { backgroundColor: "#1565c0" }
             }}
           >
             {loading ? "Registering..." : "Sign Up"}

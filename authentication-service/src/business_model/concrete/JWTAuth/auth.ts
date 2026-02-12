@@ -15,13 +15,13 @@ export class JWTAuth implements AbstractAuth {
 
   public generateAccessToken(authTokenPayload: AuthTokenPayload): string {
     return jwt.sign(authTokenPayload, jwtTokenSecret, {
-      expiresIn: accessTokenExpiresIn,
+      expiresIn: accessTokenExpiresIn
     });
   }
 
   public generateRefreshToken(authTokenPayload: AuthTokenPayload): string {
     return jwt.sign(authTokenPayload, jwtTokenSecret, {
-      expiresIn: refreshTokenExpiresIn,
+      expiresIn: refreshTokenExpiresIn
     });
   }
 
