@@ -9,11 +9,12 @@ import { WALL_HEIGHT, WALL_THICKNESS } from "../common/constants";
 export class WallMode implements AbstractConstructionMode {
   private wallMaterial: BABYLON.StandardMaterial;
   private ribbonMaterial: BABYLON.StandardMaterial;
-  private lineMaterial: BABYLON.StandardMaterial;
+  private measurementLineMaterial: BABYLON.StandardMaterial;
   private startPoint: BABYLON.Vector3 | null = null;
   private endPoint: BABYLON.Vector3 | null = null;
   private lineOrthoVec: BABYLON.Vector3 | null = null;
   private ribbon: BABYLON.Mesh = null;
+  private preRibbon: BABYLON.Mesh = null;
   private startSideLine: BABYLON.LinesMesh = null;
   private endSideLine: BABYLON.LinesMesh = null;
   private measurementLine: BABYLON.LinesMesh = null;
@@ -78,6 +79,16 @@ export class WallMode implements AbstractConstructionMode {
     material.disableDepthWrite = true;
   }
 
+  private createOverlayMaterial(
+    name: string,
+    color: BABYLON.Color3
+  ): BABYLON.StandardMaterial {
+    const material = new BABYLON.StandardMaterial(name, this.scene);
+    material.emissiveColor = color;
+    this.makeMaterialOverlay(material);
+    return material;
+  }
+
   private prepareMaterials(): void {
     this.wallMaterial = new BABYLON.StandardMaterial(
       "wallMaterial",
@@ -85,20 +96,18 @@ export class WallMode implements AbstractConstructionMode {
     );
     this.wallMaterial.diffuseColor = BABYLON.Color3.Gray();
 
-    this.ribbonMaterial = new BABYLON.StandardMaterial(
+    this.ribbonMaterial = this.createOverlayMaterial(
       "ribbonMaterial",
-      this.scene
+      BABYLON.Color3.Blue()
     );
+    this.ribbonMaterial.disableLighting = true;
     this.ribbonMaterial.emissiveColor = BABYLON.Color3.Blue();
     this.ribbonMaterial.alpha = 0.5;
-    this.makeMaterialOverlay(this.ribbonMaterial);
 
-    this.lineMaterial = new BABYLON.StandardMaterial(
-      "lineMaterial",
-      this.scene
+    this.measurementLineMaterial = this.createOverlayMaterial(
+      "measurementLineMaterial",
+      BABYLON.Color3.Purple()
     );
-    this.lineMaterial.emissiveColor = BABYLON.Color3.Purple();
-    this.makeMaterialOverlay(this.lineMaterial);
   }
 
   private enableUI(): void {
@@ -149,9 +158,11 @@ export class WallMode implements AbstractConstructionMode {
 
   private disposeMeasurementUI(): void {
     if (this.ribbon) {
-      this.removeRibbon();
-      this.removeLine();
-      this.removeSideLines();
+      this.removeMesh("ribbon", this.ribbon);
+      this.removeMesh("measurementLine", this.measurementLine);
+      this.removeMesh("startSideLine", this.startSideLine);
+      this.removeMesh("endSideLine", this.endSideLine);
+      this.removeMesh("preRibbon", this.preRibbon);
       this.disableUI();
     }
   }
@@ -180,15 +191,47 @@ export class WallMode implements AbstractConstructionMode {
 
   private getRibbonPathArray(): BABYLON.Vector3[][] {
     const ribbonDir = this.endPoint.subtract(this.startPoint);
-    const orthoVec = new BABYLON.Vector3(-ribbonDir.z, 0, ribbonDir.x)
+    const upDir = new BABYLON.Vector3(-ribbonDir.z, 0, ribbonDir.x)
       .normalize()
       .scale(WALL_THICKNESS * 0.5);
 
-    const path1 = [this.startPoint.add(orthoVec), this.endPoint.add(orthoVec)];
+    const path1 = [this.startPoint.add(upDir), this.endPoint.add(upDir)];
     const path2 = [
-      this.startPoint.subtract(orthoVec),
-      this.endPoint.subtract(orthoVec)
+      this.startPoint.subtract(upDir),
+      this.endPoint.subtract(upDir)
     ];
+
+    return [path1, path2];
+  }
+
+  private getPreRibbonPathArray(
+    groundMeshPickedPoint: BABYLON.Vector3
+  ): BABYLON.Vector3[][] {
+    const camera = this.scene.activeCamera;
+    if (!camera) return [];
+
+    const cameraRight = BABYLON.Vector3.Cross(
+      BABYLON.Vector3.Up(),
+      camera.getForwardRay().direction
+    ).normalize();
+    const absX = Math.abs(cameraRight.x);
+    const absZ = Math.abs(cameraRight.z);
+
+    let rightDir: BABYLON.Vector3;
+    if (absX > absZ) {
+      rightDir = new BABYLON.Vector3(Math.sign(cameraRight.x), 0, 0);
+    } else {
+      rightDir = new BABYLON.Vector3(0, 0, Math.sign(cameraRight.z));
+    }
+
+    const upDir = new BABYLON.Vector3(-rightDir.z, 0, rightDir.x)
+      .normalize()
+      .scale(WALL_THICKNESS * 0.5);
+    const start = groundMeshPickedPoint;
+    const end = start.add(rightDir.scale(0.5));
+
+    const path1 = [start.add(upDir), end.add(upDir)];
+    const path2 = [start.subtract(upDir), end.subtract(upDir)];
 
     return [path1, path2];
   }
@@ -197,9 +240,10 @@ export class WallMode implements AbstractConstructionMode {
     currentMousePoint: BABYLON.Vector3
   ): BABYLON.Vector3 {
     const finalPoint = currentMousePoint.clone();
-    const testX = Math.abs(currentMousePoint.x - this.startPoint.x);
-    const testZ = Math.abs(currentMousePoint.z - this.startPoint.z);
-    if (testX < testZ) {
+    const lineDir = currentMousePoint.subtract(this.startPoint).normalize();
+    const absX = Math.abs(lineDir.x);
+    const absZ = Math.abs(lineDir.z);
+    if (absX < absZ) {
       finalPoint.x = this.startPoint.x;
       this.lineOrthoVec = new BABYLON.Vector3(-1, 0, 0);
     } else {
@@ -210,63 +254,61 @@ export class WallMode implements AbstractConstructionMode {
     return finalPoint;
   }
 
-  private createLine(points: BABYLON.Vector3[]): void {
-    this.measurementLine = BABYLON.MeshBuilder.CreateLines(
+  private createMeasurementLine(points: BABYLON.Vector3[]): void {
+    this.measurementLine = this.createLine(
       "measurementLine",
-      { points, updatable: true },
-      this.scene
+      points,
+      this.measurementLineMaterial
     );
-    this.measurementLine.material = this.lineMaterial;
   }
 
-  private createSideLine(
+  private createLine(
+    name: string,
     points: BABYLON.Vector3[],
-    name: string
+    material: BABYLON.StandardMaterial
   ): BABYLON.LinesMesh {
-    const sideLine = BABYLON.MeshBuilder.CreateLines(
+    const line = BABYLON.MeshBuilder.CreateLines(
       name,
       { points, updatable: true },
       this.scene
     );
-    sideLine.material = this.lineMaterial;
+    line.material = material;
 
-    return sideLine;
+    return line;
   }
 
   private createStartSideLine(point: BABYLON.Vector3): void {
     const points = this.getSideLinePoints(point);
-    this.startSideLine = this.createSideLine(points, "startSideLine");
+    this.startSideLine = this.createLine(
+      "startSideLine",
+      points,
+      this.measurementLineMaterial
+    );
   }
 
   private createEndSideLine(point: BABYLON.Vector3): void {
     const points = this.getSideLinePoints(point);
-    this.endSideLine = this.createSideLine(points, "endSideLine");
+    this.endSideLine = this.createLine(
+      "endSideLine",
+      points,
+      this.measurementLineMaterial
+    );
   }
 
-  private updateStartSideLine(point: BABYLON.Vector3): void {
+  private updateLine(line: BABYLON.LinesMesh, points: BABYLON.Vector3[]): void {
+    BABYLON.MeshBuilder.CreateLines(
+      null,
+      { points, instance: line },
+      this.scene
+    );
+  }
+
+  private updateSideLine(
+    line: BABYLON.LinesMesh,
+    point: BABYLON.Vector3
+  ): void {
     const points = this.getSideLinePoints(point);
-    BABYLON.MeshBuilder.CreateLines(
-      null,
-      { points, instance: this.startSideLine },
-      this.scene
-    );
-  }
-
-  private updateEndSideLine(point: BABYLON.Vector3): void {
-    const points = this.getSideLinePoints(point);
-    BABYLON.MeshBuilder.CreateLines(
-      null,
-      { points, instance: this.endSideLine },
-      this.scene
-    );
-  }
-
-  private updateLine(points: BABYLON.Vector3[]): void {
-    BABYLON.MeshBuilder.CreateLines(
-      null,
-      { points, instance: this.measurementLine },
-      this.scene
-    );
+    this.updateLine(line, points);
   }
 
   private createRibbon(pathArray: BABYLON.Vector3[][]): void {
@@ -292,25 +334,35 @@ export class WallMode implements AbstractConstructionMode {
     );
   }
 
-  private removeRibbon(): void {
-    this.scene.removeMesh(this.ribbon);
-    this.ribbon.dispose();
-    this.ribbon = null;
+  private addPreRibbon(pathArray: BABYLON.Vector3[][]): void {
+    if (!this.preRibbon) {
+      this.preRibbon = BABYLON.MeshBuilder.CreateRibbon(
+        "preRibbon",
+        {
+          pathArray,
+          updatable: true
+        },
+        this.scene
+      );
+      this.preRibbon.material = this.ribbonMaterial;
+    } else {
+      BABYLON.MeshBuilder.CreateRibbon(
+        null,
+        {
+          pathArray,
+          instance: this.preRibbon
+        },
+        this.scene
+      );
+    }
   }
 
-  private removeLine(): void {
-    this.scene.removeMesh(this.measurementLine);
-    this.measurementLine.dispose();
-    this.measurementLine = null;
-  }
-
-  private removeSideLines(): void {
-    this.scene.removeMesh(this.startSideLine);
-    this.startSideLine.dispose();
-    this.startSideLine = null;
-    this.scene.removeMesh(this.endSideLine);
-    this.endSideLine.dispose();
-    this.endSideLine = null;
+  private removeMesh(name: string, mesh: BABYLON.AbstractMesh): void {
+    if (mesh) {
+      this.scene.removeMesh(mesh);
+      mesh.dispose();
+      this[name] = null;
+    }
   }
 
   private getGroundMeshPickedPoint(
@@ -343,6 +395,13 @@ export class WallMode implements AbstractConstructionMode {
 
   public onMouseMove(pointerInfo: BABYLON.PointerInfo): void {
     const groundMeshPickedPoint = this.getGroundMeshPickedPoint(pointerInfo);
+
+    if (!this.startPoint && groundMeshPickedPoint) {
+      this.addPreRibbon(this.getPreRibbonPathArray(groundMeshPickedPoint));
+    } else if (this.startPoint) {
+      this.removeMesh("preRibbon", this.preRibbon);
+    }
+
     if (!this.startPoint || !groundMeshPickedPoint) {
       return;
     }
@@ -356,15 +415,15 @@ export class WallMode implements AbstractConstructionMode {
 
     if (!this.ribbon) {
       this.createRibbon(ribbonPathArray);
-      this.createLine(linePoints);
+      this.createMeasurementLine(linePoints);
       this.createStartSideLine(linePoints[0]);
       this.createEndSideLine(linePoints[1]);
       this.enableUI();
     } else {
       this.updateRibbon(ribbonPathArray);
-      this.updateLine(linePoints);
-      this.updateStartSideLine(linePoints[0]);
-      this.updateEndSideLine(linePoints[1]);
+      this.updateLine(this.measurementLine, linePoints);
+      this.updateSideLine(this.startSideLine, linePoints[0]);
+      this.updateSideLine(this.endSideLine, linePoints[1]);
     }
   }
 

@@ -2,16 +2,13 @@ import { useEffect, useRef } from "react";
 import React from "react";
 import { GlobalContext } from "../Main";
 
-interface SceneProps {
-  cursorUrl: string | null;
-}
-
-const Scene: React.FC<SceneProps> = ({ cursorUrl }) => {
+const Scene: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const { scene, sceneInjection, sceneDisposal } =
+  const { scene, sceneInjection, sceneDisposal, activeMode } =
     React.useContext(GlobalContext);
-  const getCursorClass = () => {
-    return cursorUrl ? "selection-cursor" : "";
+
+  const getCursorClassName = (): string => {
+    return activeMode !== "none" ? "no-cursor" : "";
   };
 
   useEffect(() => {
@@ -20,12 +17,15 @@ const Scene: React.FC<SceneProps> = ({ cursorUrl }) => {
     } else {
       scene.render();
     }
+  }, [scene, sceneInjection]);
+
+  useEffect(() => {
     return () => {
       sceneDisposal();
     };
-  }, [scene, sceneDisposal, sceneInjection]);
+  }, [sceneDisposal]);
 
-  return <canvas ref={canvasRef} className={`scene ${getCursorClass()}`} />;
+  return <canvas ref={canvasRef} className={`scene ${getCursorClassName()}`} />;
 };
 
 export default Scene;

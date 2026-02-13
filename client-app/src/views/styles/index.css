@@ -7,14 +7,14 @@
   outline: none;
 }
 
-.selection-cursor {
-  cursor: url("./icons/selection_cursor.png") 12 12, auto;
-}
-
 html, body, #root {
   width: 100%;
   height: 100%;
   margin: 0;
+}
+
+.no-cursor {
+  cursor: none;
 }
 
 /*# sourceMappingURL=index.css.map */

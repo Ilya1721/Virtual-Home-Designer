@@ -15,9 +15,10 @@ export const GlobalContext = React.createContext<GlobalContextType>(null);
 const Main = () => {
   const [scene, setScene] = React.useState<GlobalContextType["scene"]>(null);
   const [user, setUser] = React.useState<GlobalContextType["user"]>(null);
+  const [activeMode, setActiveMode] =
+    React.useState<GlobalContextType["activeMode"]>("none");
   const [signUpOpen, setSignUpOpen] = React.useState(false);
   const [signInOpen, setSignInOpen] = React.useState(false);
-  const [cursorUrl, setCursorUrl] = React.useState<string | null>(null);
 
   const authService = React.useMemo(() => new AuthService(setUser), [setUser]);
 
@@ -43,14 +44,12 @@ const Main = () => {
       sceneInjection,
       sceneDisposal,
       user,
-      setUser
+      setUser,
+      activeMode,
+      setActiveMode
     }),
-    [scene, sceneDisposal, sceneInjection, user]
+    [scene, sceneDisposal, sceneInjection, user, activeMode]
   );
-
-  const changeCursor = useCallback((url: string | null) => {
-    setCursorUrl(url);
-  }, []);
 
   const handleOpenSignUp = () => setSignUpOpen(true);
   const handleCloseSignUp = () => setSignUpOpen(false);
@@ -68,8 +67,8 @@ const Main = () => {
         onSignIn={handleOpenSignIn}
         authService={authService}
       />
-      <Scene cursorUrl={cursorUrl} />
-      <ModeSelector changeCursor={changeCursor} />
+      <Scene />
+      <ModeSelector />
       <SignUpForm
         open={signUpOpen}
         onClose={handleCloseSignUp}

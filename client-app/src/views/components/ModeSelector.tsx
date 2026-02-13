@@ -52,11 +52,7 @@ const activeModeSx: React.CSSProperties = {
 
 type Mode = "construction" | "furniture";
 
-interface ModeSelectorProps {
-  changeCursor: (url: string | null) => void;
-}
-
-const ModeSelector: React.FC<ModeSelectorProps> = ({ changeCursor }) => {
+const ModeSelector: React.FC = () => {
   const [active, setActive] = useState<Mode>("construction");
 
   const makeStylesForBtn = (mode: Mode) => {
@@ -94,9 +90,7 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({ changeCursor }) => {
         </ButtonBase>
       </Box>
       <Box sx={activeModeSx}>
-        {active === "construction" && (
-          <ConstructionMode changeCursor={changeCursor} />
-        )}
+        {active === "construction" && <ConstructionMode />}
         {active === "furniture" && <FurnitureMode />}
       </Box>
     </>

@@ -41,17 +41,8 @@ const modeNameSx: React.CSSProperties = {
   fontWeight: 600
 };
 
-type Mode = "wall" | "window" | "door" | "none";
-
-interface ConstructionModeProps {
-  changeCursor: (url: string | null) => void;
-}
-
-const ConstructionMode: React.FC<ConstructionModeProps> = ({
-  changeCursor
-}) => {
-  const [activeMode, setActiveMode] = React.useState<Mode>("none");
-  const { scene } = React.useContext(GlobalContext);
+const ConstructionMode: React.FC = () => {
+  const { scene, activeMode, setActiveMode } = React.useContext(GlobalContext);
   const constructionModeSelector = React.useMemo(() => {
     if (scene) {
       return new ConstructionModeSelector(scene);
@@ -60,20 +51,40 @@ const ConstructionMode: React.FC<ConstructionModeProps> = ({
   const wallMode = React.useRef(null);
 
   useEffect(() => {
-    if (scene) {
-      wallMode.current = new WallMode(scene);
+    if (!scene || !constructionModeSelector) {
+      return;
     }
-  }, [scene]);
+
+    if (wallMode.current) {
+      wallMode.current.dispose();
+      wallMode.current = null;
+    }
+
+    switch (activeMode) {
+      case "wall":
+        wallMode.current = new WallMode(scene);
+        constructionModeSelector.setMode(wallMode.current);
+        break;
+      case "window":
+        constructionModeSelector.setMode(null);
+        break;
+      case "door":
+        constructionModeSelector.setMode(null);
+        break;
+    }
+  }, [activeMode, scene, constructionModeSelector]);
 
   useEffect(() => {
     return () => {
+      if (wallMode.current) {
+        wallMode.current.dispose();
+        wallMode.current = null;
+      }
       constructionModeSelector?.setMode(null);
-      changeCursor(null);
-      wallMode.current?.dispose();
     };
-  }, [changeCursor, constructionModeSelector]);
+  }, [constructionModeSelector]);
 
-  const makeStylesForBtn = (mode: Mode) => {
+  const makeStylesForBtn = (mode: string) => {
     const isActive = activeMode === mode;
     return {
       backgroundColor: isActive ? "#cfcfcfff" : "inherit",
@@ -81,25 +92,12 @@ const ConstructionMode: React.FC<ConstructionModeProps> = ({
     };
   };
 
-  const activateMode = (mode: Mode) => {
-    if (mode == activeMode) {
+  const activateMode = (mode: string) => {
+    if (mode === activeMode) {
       setActiveMode("none");
       constructionModeSelector?.setMode(null);
-      changeCursor(null);
     } else {
       setActiveMode(mode);
-      changeCursor("/icons/selection_cursor.png");
-      switch (mode) {
-        case "wall":
-          constructionModeSelector?.setMode(wallMode.current);
-          break;
-        case "window":
-          constructionModeSelector?.setMode(null);
-          break;
-        case "door":
-          constructionModeSelector?.setMode(null);
-          break;
-      }
     }
   };
 
