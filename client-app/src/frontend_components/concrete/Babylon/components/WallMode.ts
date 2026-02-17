@@ -5,6 +5,7 @@ import { BabylonScene } from "./Scene";
 import { AbstractConstructionMode } from "../../../abstract/AbstractConstructionMode";
 import { AbstractScene } from "../../../abstract/AbstractScene";
 import { WALL_HEIGHT, WALL_THICKNESS } from "../common/constants";
+import { getSnappedGroundDirections } from "../common/utils";
 
 export class WallMode implements AbstractConstructionMode {
   private wallMaterial: BABYLON.StandardMaterial;
@@ -95,7 +96,6 @@ export class WallMode implements AbstractConstructionMode {
       this.scene
     );
     this.wallMaterial.diffuseColor = BABYLON.Color3.Gray();
-
     this.ribbonMaterial = this.createOverlayMaterial(
       "ribbonMaterial",
       BABYLON.Color3.Blue()
@@ -103,7 +103,6 @@ export class WallMode implements AbstractConstructionMode {
     this.ribbonMaterial.disableLighting = true;
     this.ribbonMaterial.emissiveColor = BABYLON.Color3.Blue();
     this.ribbonMaterial.alpha = 0.5;
-
     this.measurementLineMaterial = this.createOverlayMaterial(
       "measurementLineMaterial",
       BABYLON.Color3.Purple()
@@ -210,28 +209,16 @@ export class WallMode implements AbstractConstructionMode {
     const camera = this.scene.activeCamera;
     if (!camera) return [];
 
-    const cameraRight = BABYLON.Vector3.Cross(
-      BABYLON.Vector3.Up(),
+    const snappedDirections = getSnappedGroundDirections(
       camera.getForwardRay().direction
-    ).normalize();
-    const absX = Math.abs(cameraRight.x);
-    const absZ = Math.abs(cameraRight.z);
+    );
+    const rightDir = snappedDirections.right;
+    const forwardDir = snappedDirections.forward;
 
-    let rightDir: BABYLON.Vector3;
-    if (absX > absZ) {
-      rightDir = new BABYLON.Vector3(Math.sign(cameraRight.x), 0, 0);
-    } else {
-      rightDir = new BABYLON.Vector3(0, 0, Math.sign(cameraRight.z));
-    }
-
-    const upDir = new BABYLON.Vector3(-rightDir.z, 0, rightDir.x)
-      .normalize()
-      .scale(WALL_THICKNESS * 0.5);
     const start = groundMeshPickedPoint;
     const end = start.add(rightDir.scale(0.5));
-
-    const path1 = [start.add(upDir), end.add(upDir)];
-    const path2 = [start.subtract(upDir), end.subtract(upDir)];
+    const path1 = [start.add(forwardDir), end.add(forwardDir)];
+    const path2 = [start.subtract(forwardDir), end.subtract(forwardDir)];
 
     return [path1, path2];
   }
@@ -370,7 +357,8 @@ export class WallMode implements AbstractConstructionMode {
   ): BABYLON.Vector3 | null {
     const pickedObject = this.scene.pick(
       pointerInfo.event.clientX,
-      pointerInfo.event.clientY
+      pointerInfo.event.clientY,
+      (mesh) => mesh === this.babylonScene.getGroundMesh()
     );
     const groundMeshId = this.babylonScene.getGroundMesh().id;
 

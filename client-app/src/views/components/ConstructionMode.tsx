@@ -1,8 +1,9 @@
 import Box from "@mui/material/Box";
 import ButtonBase from "@mui/material/ButtonBase";
 import Typography from "@mui/material/Typography";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ConstructionModeSelector } from "../../frontend_components/concrete/Babylon/components/ConstructionModeSelector";
+import { FloorMode } from "../../frontend_components/concrete/Babylon/components/FloorMode";
 import { WallMode } from "../../frontend_components/concrete/Babylon/components/WallMode";
 import { GlobalContext } from "../../Main";
 
@@ -22,9 +23,7 @@ const itemButtonSx = {
   display: "flex",
   flexDirection: "column",
   padding: 1,
-  borderRadius: 2,
-  transition: "background-color 0.12s ease-in-out",
-  "&:hover": { backgroundColor: "#efeeeeff" }
+  borderRadius: 2
 };
 
 const buttonsGridSx: React.CSSProperties = {
@@ -43,12 +42,14 @@ const modeNameSx: React.CSSProperties = {
 
 const ConstructionMode: React.FC = () => {
   const { scene, activeMode, setActiveMode } = React.useContext(GlobalContext);
+  const [isExpanded, setIsExpanded] = useState(false);
   const constructionModeSelector = React.useMemo(() => {
     if (scene) {
       return new ConstructionModeSelector(scene);
     }
   }, [scene]);
   const wallMode = React.useRef(null);
+  const floorMode = React.useRef(null);
 
   useEffect(() => {
     if (!scene || !constructionModeSelector) {
@@ -60,10 +61,19 @@ const ConstructionMode: React.FC = () => {
       wallMode.current = null;
     }
 
+    if (floorMode.current) {
+      floorMode.current.dispose();
+      floorMode.current = null;
+    }
+
     switch (activeMode) {
       case "wall":
         wallMode.current = new WallMode(scene);
         constructionModeSelector.setMode(wallMode.current);
+        break;
+      case "floor":
+        floorMode.current = new FloorMode(scene);
+        constructionModeSelector.setMode(floorMode.current);
         break;
       case "window":
         constructionModeSelector.setMode(null);
@@ -79,6 +89,10 @@ const ConstructionMode: React.FC = () => {
       if (wallMode.current) {
         wallMode.current.dispose();
         wallMode.current = null;
+      }
+      if (floorMode.current) {
+        floorMode.current.dispose();
+        floorMode.current = null;
       }
       constructionModeSelector?.setMode(null);
     };
@@ -113,6 +127,14 @@ const ConstructionMode: React.FC = () => {
     activateMode("door");
   };
 
+  const onFloorBtnClicked = () => {
+    activateMode("floor");
+  };
+
+  const toggleExpanded = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   return (
     <>
       <Typography variant="subtitle1" sx={modeNameSx}>
@@ -141,6 +163,44 @@ const ConstructionMode: React.FC = () => {
           <Typography sx={buttonTextSx}>Door</Typography>
         </ButtonBase>
       </Box>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center"
+        }}
+      >
+        <ButtonBase
+          sx={{
+            padding: 0,
+            borderRadius: 0
+          }}
+          disableRipple
+          disableTouchRipple
+          onClick={toggleExpanded}
+        >
+          <img
+            src="/icons/up-arrow.png"
+            alt="toggle"
+            style={{
+              width: 24,
+              height: 24,
+              objectFit: "contain",
+              transform: isExpanded ? "scaleY(-1)" : "scaleY(1)"
+            }}
+          />
+        </ButtonBase>
+      </Box>
+      {isExpanded && (
+        <Box sx={buttonsGridSx}>
+          <ButtonBase
+            sx={{ ...itemButtonSx, ...makeStylesForBtn("floor") }}
+            onClick={onFloorBtnClicked}
+          >
+            <img src="/icons/floor.png" alt="floor" style={iconSx} />
+            <Typography sx={buttonTextSx}>Floor</Typography>
+          </ButtonBase>
+        </Box>
+      )}
     </>
   );
 };
