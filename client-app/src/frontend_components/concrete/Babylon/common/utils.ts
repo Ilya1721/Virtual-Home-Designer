@@ -34,9 +34,28 @@ export const getSnappedGroundDirections = (
     rightDir = new BABYLON.Vector3(0, 0, Math.sign(groundRight.z));
   }
 
-  const forwardDir = new BABYLON.Vector3(-rightDir.z, 0, rightDir.x)
-    .normalize()
-    .scale(0.25);
+  const forwardDir = new BABYLON.Vector3(
+    -rightDir.z,
+    0,
+    rightDir.x
+  ).normalize();
 
   return { right: rightDir, forward: forwardDir, up: BABYLON.Vector3.Up() };
+};
+
+export const getXZOrthoVec = (
+  startPoint: BABYLON.Vector3,
+  endPoint: BABYLON.Vector3
+): BABYLON.Vector3 => {
+  const lineDir = endPoint.subtract(startPoint).normalize();
+  const orthoVec = new BABYLON.Vector3(-lineDir.z, 0, lineDir.x);
+  return orthoVec;
+};
+
+export const isEqual = (
+  left: number,
+  right: number,
+  epsilon = 1e-6
+): boolean => {
+  return Math.abs(right - left) < epsilon;
 };
